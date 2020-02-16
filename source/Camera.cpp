@@ -18,6 +18,7 @@ const glm::vec3 &scene::Camera::getCameraPosition() const {
 }
 
 glm::mat4 scene::Camera::getViewMatrix() const {
+    // std::cout << _cameraFront.x <<" " << _cameraFront.y << " " << _cameraFront.z << std::endl;
     return glm::lookAt(_cameraPos, _cameraPos + _cameraFront, _cameraUp);
 }
 
@@ -58,11 +59,11 @@ void scene::Camera::moveRight() {
 }
 
 void scene::Camera::rotateLeft() {
-    _cameraFront = glm::angleAxis(_cameraSpeed / 6, _cameraUp) * _cameraFront;
+    _cameraFront = glm::angleAxis(_cameraSpeed / 10, _cameraUp) * _cameraFront;
     updateCamerasVectors();
 }
 
 void scene::Camera::rotateRight() {
-    _cameraFront = glm::angleAxis(-_cameraSpeed / 6, _cameraUp) * _cameraFront;
+    _cameraFront = glm::angleAxis(-_cameraSpeed / 10, _cameraUp) * _cameraFront;
     updateCamerasVectors();
 }

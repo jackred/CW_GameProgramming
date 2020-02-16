@@ -21,8 +21,8 @@ find_package (OpenGL REQUIRED)
 find_library(GLFW3_LIBRARY glfw REQUIRED)
 
 if(LINUX)
-find_path(GLEW_INCLUDE_DIR GL/glew.h)
-find_library(GLEW_LIBRARY GLEW glew REQUIRED)
+  find_path(GLEW_INCLUDE_DIR GL/glew.h)
+  find_library(GLEW_LIBRARY GLEW glew REQUIRED)
 endif(LINUX)
 
 if (APPLE)
@@ -43,6 +43,7 @@ set(SOURCE_FILES
   source/Main.cpp
   source/Mesh.cpp
   source/Maze.cpp
+  source/MazeDisplay.cpp
   source/Misc.cpp
   source/Model.cpp
   source/MTLLoader.cpp
@@ -51,6 +52,7 @@ set(SOURCE_FILES
   source/Scene.cpp
   source/Shader.cpp
   source/ShaderLoader.cpp
+  source/Wall.cpp
   source/Window.cpp)
 include_directories(${PROJECT_SOURCE_DIR}/include/)
 include_directories(${PROJECT_SOURCE_DIR}/stb_image/)

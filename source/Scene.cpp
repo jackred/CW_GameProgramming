@@ -9,10 +9,11 @@ scene::Scene::Scene() : App(1920, 1080, "Scene") {
 }
 
 scene::Scene::~Scene() {
-    for (auto &it : _models)
-        delete it.second;
+    _maze.clear();
     for (auto &it : _objects)
         delete it;
+    for (auto &it : _models)
+        delete it.second;
 }
 
 void scene::Scene::init() {
@@ -33,15 +34,13 @@ void scene::Scene::init() {
             gl_wrapper::Shader(vsTexturePath, fsTexturePath, gl_wrapper::ShaderType::TEXTURE_DIFFUSE)
     ));
 
-    std::string path = "../resource/mushroom.obj";
-    _models.emplace(ModelType::MUSHROOM, new Model(path));
+    std::string path = "../resource/cube.obj";
+    _models.emplace(ModelType::CUBE, new Model(path));
 
-    _objects.push_back(new AObject(ModelType::MUSHROOM));
+    _maze.init();
+    // _objects.push_back(new Wall());
 
-    for (auto &it : _objects)
-        it->init();
-
-    _dirLight.setAmbient(glm::vec3(0.3f, 0.3f, 0.1f));
+    _dirLight.setAmbient(glm::vec3(0.5f, 0.5f, 0.5f));
     _dirLight.setShader(_shaders);
 
     _pointLights.emplace_back(scene::PointLight(glm::vec3(9.3f, 4.3f, 0.0f), 10));
@@ -69,8 +68,9 @@ void scene::Scene::onDraw() {
         gl_wrapper::Shader::unBind();
     }
 
+    _maze.draw(_models, _shaders);
     for (auto &object : _objects)
-        object->draw(_models, _shaders, _objects);
+        object->draw(_models, _shaders);
 }
 
 void scene::Scene::checkKey() {

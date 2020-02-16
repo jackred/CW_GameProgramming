@@ -69,6 +69,7 @@ namespace loader {
 namespace scene {
     enum class ModelType {
         UNKNOWN = 0,
+        CUBE,
         MUSHROOM
     };
 }

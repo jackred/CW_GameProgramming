@@ -47,6 +47,10 @@ void scene::Model::setSize(glm::vec3 size) {
     _size = size;
 }
 
+void scene::Model::setOffset(glm::vec3 offset) {
+    _offset = offset;
+}
+
 void scene::Model::draw(const gl_wrapper::Shaders_t &shaders) {
     auto model = getModelMatrix();
     auto inverse_model = glm::transpose(glm::inverse(model));
@@ -73,10 +77,12 @@ void scene::Model::draw(const gl_wrapper::Shaders_t &shaders) {
 }
 
 glm::mat4 scene::Model::getModelMatrix() {
-    glm::mat4 translate = glm::translate(glm::mat4(1.0f), _position);
-    glm::mat4 rotate = glm::rotate(glm::mat4(1.0f), glm::radians(_orientation.x), glm::vec3(1.f, 0.f, 0.f));
+    glm::mat4 translate = glm::translate(glm::mat4(1.0f), _position - _offset);
+    glm::mat4 rotate = glm::translate(glm::mat4(1.0f), _offset);
+    rotate = glm::rotate(rotate, glm::radians(_orientation.x), glm::vec3(1.f, 0.f, 0.f));
     rotate = glm::rotate(rotate, glm::radians(_orientation.y), glm::vec3(0.f, 1.f, 0.f));
     rotate = glm::rotate(rotate, glm::radians(_orientation.z), glm::vec3(0.f, 0.f, 1.f));
+    rotate = glm::translate(rotate, -_offset);
     glm::mat4 scale = glm::scale(glm::mat4(1.0f), _size);
     return translate * rotate * scale;
 }

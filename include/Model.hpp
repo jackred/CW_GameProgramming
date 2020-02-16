@@ -37,6 +37,7 @@ namespace scene {
         void setPosition(glm::vec3 position);
         void setOrientation(glm::vec3 orientation);
         void setSize(glm::vec3 size);
+        void setOffset(glm::vec3 offset);
         virtual void draw(const gl_wrapper::Shaders_t &shaders);
 
     protected:
@@ -52,6 +53,7 @@ namespace scene {
         glm::vec3 _position = glm::vec3(0.0f, 0.0f, 0.0f);
         glm::vec3 _orientation = glm::vec3(0.0f, 0.0f, 0.0f);
         glm::vec3 _size = glm::vec3(1.0f, 1.0f, 1.0f);
+        glm::vec3 _offset = glm::vec3(0.0f, 0.0f, 0.0f);
         loader::Materials_t _materialList;
     };
 
