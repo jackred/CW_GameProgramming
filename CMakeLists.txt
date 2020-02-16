@@ -42,6 +42,7 @@ set(SOURCE_FILES
   source/DirLight.cpp
   source/Main.cpp
   source/Mesh.cpp
+  source/Maze.cpp
   source/Misc.cpp
   source/Model.cpp
   source/MTLLoader.cpp

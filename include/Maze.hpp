@@ -6,7 +6,6 @@
 
 /* author jackred@tuta.io */
 
-class
 #ifndef _MAZE_H_
 #define _MAZE_H_
 
@@ -16,15 +15,17 @@ class
 
 namespace backstage {
 
+    typedef std::vector<std::array<glm::vec2, 4>> walls_t;
+
   class Maze {
   private:
-    std::vector<std::array<glm::vec2> 4> walls;
+      walls_t walls;
     glm::vec2 start;
     glm::vec2 end;
 
   public:
     Maze(unsigned int with, unsigned int length);
-    std::vector<glm::vec4> getWalls() const;
+      walls_t getWalls() const;
     glm::vec2 getStart() const;
     glm::vec2 getEnd() const;
   };
