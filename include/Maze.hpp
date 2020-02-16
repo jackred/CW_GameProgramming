@@ -10,12 +10,14 @@
 #define _MAZE_H_
 
 #include <vector>
+#include <array>
 #include <iostream>
+
 #include "glm/glm.hpp"
 
 namespace backstage {
 
-    typedef std::vector<std::array<glm::vec2, 4>> walls_t;
+    typedef std::vector<std::array<glm::vec2, 2>> walls_t;
 
   class Maze {
   private:
