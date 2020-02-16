@@ -4,16 +4,19 @@
 
 #include "AObject.hpp"
 
-scene::AObject::AObject(ModelType type, unsigned int id) : _type(type), _id(id) {
-}
+unsigned int scene::AObject::_idGen = 0;
 
-scene::AObject::AObject(const scene::AObject &other, unsigned int id) : _type(other._type), _id(id),
+scene::AObject::AObject(scene::ModelType type) : _type(type), _id(_idGen++) {}
+
+scene::AObject::AObject(ModelType type, unsigned int id) : _type(type), _id(id) {}
+
+scene::AObject::AObject(const scene::AObject &other) : _type(other._type), _id(_idGen++),
     _orientation(other._orientation), _offset(other._offset), _size(other._size) {}
 
 void scene::AObject::init() {}
 
 void scene::AObject::draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders,
-                          const std::vector<std::unique_ptr<AObject>> &objects) {
+                          const std::vector<AObject*> &objects) {
     if (_type == ModelType::UNKNOWN)
         return;
     models.at(_type)->setPosition(_position + _offset);

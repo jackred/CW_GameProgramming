@@ -8,6 +8,13 @@ scene::Scene::Scene() : App(1920, 1080, "Scene") {
     init();
 }
 
+scene::Scene::~Scene() {
+    for (auto &it : _models)
+        delete it.second;
+    for (auto &it : _objects)
+        delete it;
+}
+
 void scene::Scene::init() {
     std::string vsModelPath = "../shader/model_vs.glsl";
     std::string fsModelPath = "../shader/model_fs.glsl";
@@ -26,14 +33,19 @@ void scene::Scene::init() {
             gl_wrapper::Shader(vsTexturePath, fsTexturePath, gl_wrapper::ShaderType::TEXTURE_DIFFUSE)
     ));
 
+    std::string path = "../resource/mushroom.obj";
+    _models.emplace(ModelType::MUSHROOM, new Model(path));
+
+    _objects.push_back(new AObject(ModelType::MUSHROOM));
+
     for (auto &it : _objects)
         it->init();
 
     _dirLight.setAmbient(glm::vec3(0.3f, 0.3f, 0.1f));
     _dirLight.setShader(_shaders);
 
-    _pointLights.emplace_back(scene::PointLight(glm::vec3(9.3f, 4.3f, 0.0f), 10, 0));
-    _pointLights.emplace_back(scene::PointLight(glm::vec3(1.2f, 3.5f, 0.0f), 25, 1));
+    _pointLights.emplace_back(scene::PointLight(glm::vec3(9.3f, 4.3f, 0.0f), 10));
+    _pointLights.emplace_back(scene::PointLight(glm::vec3(1.2f, 3.5f, 0.0f), 25));
     _pointLights[0].setAmbient(glm::vec3(0.96f, 0.85f, 0.05f));
     _pointLights[1].setAmbient(glm::vec3(0.82f, 0.12f, 0.05f));
     _pointLights[1].setDiffuse(glm::vec3(0.82f, 0.12f, 0.05f));
@@ -47,8 +59,6 @@ void scene::Scene::onDraw() {
     this->checkKey();
 
     auto aTime = glfwGetTime();
-    _pointLights[1].setPosition(glm::vec3(cos(aTime * 2) + 1.0f, 3.4f, sin(aTime * 2)));
-    _pointLights[1].setShader(_shaders);
 
     for (auto &shader : _shaders) {
         shader->bind();

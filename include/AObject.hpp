@@ -19,13 +19,14 @@ namespace scene {
 
     class AObject {
     public:
+        explicit AObject(ModelType type);
         AObject(ModelType type, unsigned int id);
-        AObject(const AObject& other, unsigned int id);
+        AObject(const AObject& other);
 		virtual ~AObject() = default;
 
         virtual void init();
         virtual void draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders,
-                const std::vector<std::unique_ptr<AObject>> &objects);
+                const std::vector<AObject*> &objects);
 
         void setPosition(glm::vec3 position);
         void setOrientation(glm::vec3 orientation);
@@ -39,7 +40,8 @@ namespace scene {
         bool isColliding(glm::vec3 position, glm::vec3 shape) const;
 
     protected:
-        const unsigned int _id = 0;
+        const unsigned int _id;
+        static unsigned int _idGen;
         glm::vec3 _position = glm::vec3(0.0f, 0.0f, 0.0f);
         glm::vec3 _orientation = glm::vec3(0.0f, 0.0f, 0.0f);
         glm::vec3 _offset = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -51,7 +53,7 @@ namespace scene {
     };
 
     typedef std::unique_ptr<AObject> Objects_ptr_t;
-    typedef std::vector<Objects_ptr_t> Objects_t;
+    typedef std::vector<AObject*> Objects_t;
 
 }
 

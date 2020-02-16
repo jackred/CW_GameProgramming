@@ -30,8 +30,7 @@ namespace scene {
         };
 
     public:
-        explicit PointLight(const glm::vec3 &position, unsigned int distance = 20,
-                unsigned int nb = 0);
+        explicit PointLight(const glm::vec3 &position, unsigned int distance = 20);
 
         void setDistance(unsigned int distance);
         void setPosition(const glm::vec3 &position);
@@ -43,6 +42,7 @@ namespace scene {
         float readDistanceMap(AttenuationType type) const;
 
     private:
+        static unsigned int _nbGen;
         glm::vec3 _position;
         unsigned int _distance;
         const std::map<unsigned int, LightDistance> _distanceMap = {

@@ -33,6 +33,7 @@ namespace scene {
 
     public:
         Scene();
+        ~Scene();
 
         void init();
 

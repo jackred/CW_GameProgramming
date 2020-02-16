@@ -55,7 +55,7 @@ namespace scene {
         loader::Materials_t _materialList;
     };
 
-    typedef std::unordered_map<ModelType, std::unique_ptr<scene::Model>> Models_t;
+    typedef std::unordered_map<ModelType, scene::Model*> Models_t;
 }
 
 #endif /* !MODEL_HPP */
