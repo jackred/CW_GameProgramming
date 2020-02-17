@@ -12,24 +12,35 @@
 #include <vector>
 #include <array>
 #include <iostream>
+#include <stdlib.h>
+#include <unistd.h>
 
 #include "glm/glm.hpp"
 
 namespace backstage {
 
-    typedef std::vector<std::array<glm::vec2, 2>> walls_t;
-
+  typedef std::vector<std::array<glm::vec2, 2>> walls_t;
+  typedef std::vector<std::vector<unsigned int>> maze_t;
+  
   class Maze {
   private:
-      walls_t walls;
-    glm::vec2 start;
-    glm::vec2 end;
-
+    maze_t _maze;
+    walls_t _walls;
+    glm::vec2 _start;
+    glm::vec2 _end;
+    unsigned int countNeighbors(maze_t maze, size_t x, size_t y);
+    maze_t generateEmptyMaze(size_t width,size_t length);
+    void generateSeed();
+    unsigned int ruleB3_1234Cell(maze_t maze, size_t i, size_t j);
+    void ruleB3_1234Iteration();
+    void generateCorridor();
+      
   public:
-    Maze(unsigned int with, unsigned int length);
-      walls_t getWalls() const;
+    Maze(size_t width=30,  size_t length=30);
+    walls_t getWalls() const;
     glm::vec2 getStart() const;
     glm::vec2 getEnd() const;
+    std::vector<std::vector<unsigned int>> getMaze() const;
   };
 
 }
