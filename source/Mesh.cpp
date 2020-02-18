@@ -42,12 +42,12 @@ void gl_wrapper::Mesh::setupMesh() {
     glVertexAttribPointer(normalID, 3, GL_FLOAT, GL_FALSE, sizeof(loader::Vertex),
             (void *) offsetof(loader::Vertex, normal));
 
-    if (!_textures.empty()) {
+    /*if (!_textures.empty()) {
         GLuint textureID = 2;
         glVertexAttribPointer(textureID, 2, GL_FLOAT, GL_FALSE, sizeof(loader::Vertex),
                 (void *) offsetof(loader::Vertex, textureCord));
         glEnableVertexAttribArray(textureID);
-    }
+    }*/
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -66,7 +66,7 @@ void gl_wrapper::Mesh::setFramebufferTexture(unsigned int width, unsigned int he
 }
 
 void gl_wrapper::Mesh::draw(const Shader_ptr_t &shader) {
-    for (int i = 0; i < (int) _textures.size(); i++) {
+    /*for (int i = 0; i < (int) _textures.size(); i++) {
         glActiveTexture(GL_TEXTURE0 + i);
         std::string name;
         if (_textures[i].type == loader::TextureType::TEXTURE_DIFFUSE)
@@ -78,7 +78,7 @@ void gl_wrapper::Mesh::draw(const Shader_ptr_t &shader) {
         else
             shader->setUniformInt(("material." + name).c_str(), i);
         glBindTexture(GL_TEXTURE_2D, _textures[i].id);
-    }
+    }*/
     glBindVertexArray(_vaoID);
     glDrawElements(GL_TRIANGLES, (GLsizei) _indices.size(), GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);

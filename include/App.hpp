@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "IApp.hpp"
+#include "DepthBuffer.hpp"
 #include "Lib.hpp"
 #include "Window.hpp"
 
@@ -21,6 +22,8 @@ namespace gl_wrapper {
         void start();
 
         virtual void onDraw();
+        virtual void onCheckDepth();
+
         void onMouseMove(double x, double y) override;
         void onMouseDown(int button, int action) override;
         void onMouseScroll(double x, double y) override;
@@ -29,6 +32,7 @@ namespace gl_wrapper {
     protected:
         Window &getWindow();
         virtual void checkKey();
+        DepthBuffer _depthBuffer;
 
     private:
         void hintsGLFW();

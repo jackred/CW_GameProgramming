@@ -26,6 +26,7 @@ gl_wrapper::App::App(unsigned int width, unsigned int height, const std::string 
     glDepthFunc(GL_LESS);
 
     glEnable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 #if _MSC_VER
@@ -52,19 +53,34 @@ gl_wrapper::App::~App() {
 void gl_wrapper::App::start() {
     std::cout << "Starting app..." << std::endl;
 
+    _depthBuffer.init();
+
     while (!_window.shouldClose()){
         this->App::checkKey();
-        _window.setViewport();
-
-        glEnable(GL_DEPTH_TEST);
 
         glClearColor(0.19f, 0.22f, 0.23f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        _depthBuffer.setViewPort();
+        _depthBuffer.bind();
+        glClear(GL_DEPTH_BUFFER_BIT);
+        //glFrontFace(GL_CW);
+        //glCullFace(GL_FRONT);
+        onCheckDepth();
+        //glCullFace(GL_BACK);
+        //glFrontFace(GL_CCW);
+        DepthBuffer::unBind();
+
+        _window.setViewport();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        _depthBuffer.bindTexture();
         onDraw();
 
         glfwPollEvents();
         _window.swapBuffers();
     }
+
+    _depthBuffer.clear();
 }
 
 void gl_wrapper::App::checkKey() {
@@ -74,6 +90,8 @@ void gl_wrapper::App::checkKey() {
 }
 
 void gl_wrapper::App::onDraw() {}
+
+void gl_wrapper::App::onCheckDepth() {}
 
 void gl_wrapper::App::onMouseMove(double x, double y) {
     // std::cout << x << " " << y << std::endl;

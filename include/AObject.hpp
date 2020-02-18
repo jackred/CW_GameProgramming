@@ -23,9 +23,10 @@ namespace scene {
         AObject(const AObject& other);
 		virtual ~AObject() = default;
 
-        virtual void draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders);
+		void draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders);
+        void checkDepth(const scene::Models_t &models, const gl_wrapper::Shader_ptr_t &depth);
 
-        void setPosition(glm::vec3 position);
+        virtual void setPosition(glm::vec3 position);
         void setOrientation(glm::vec3 orientation);
         virtual void setShape(glm::vec3 shape);
 

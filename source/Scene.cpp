@@ -23,25 +23,40 @@ void scene::Scene::init() {
     std::string fsLightPath = "../shader/light_fs.glsl";
     std::string vsTexturePath = "../shader/texture_vs.glsl";
     std::string fsTexturePath = "../shader/texture_fs.glsl";
+    std::string vsDepthPath = "../shader/depth_vs.glsl";
+    std::string fsDepthPath = "../shader/depth_fs.glsl";
 
     _shaders.push_back(std::make_unique<gl_wrapper::Shader>(
             gl_wrapper::Shader(vsModelPath, fsModelPath, gl_wrapper::ShaderType::MODEL)
     ));
+    _shaders.back()->setUniformInt("shadowMap", 0);
     _shaders.push_back(std::make_unique<gl_wrapper::Shader>(
             gl_wrapper::Shader(vsLightPath, fsLightPath, gl_wrapper::ShaderType::LIGHT)
     ));
     _shaders.push_back(std::make_unique<gl_wrapper::Shader>(
             gl_wrapper::Shader(vsTexturePath, fsTexturePath, gl_wrapper::ShaderType::TEXTURE_DIFFUSE)
     ));
+    _depth = std::make_unique<gl_wrapper::Shader>(
+            gl_wrapper::Shader(vsDepthPath, fsDepthPath, gl_wrapper::ShaderType::DEPTH)
+    );
 
     std::string path = "../resource/cube.obj";
     _models.emplace(ModelType::CUBE, new Model(path));
 
     _maze.init();
-    // _objects.push_back(new Wall());
+    _objects.push_back(new Wall());
+    _objects.back()->setPosition(glm::vec3(0.0f, 1.5f, 0.0));
+    _objects.push_back(new Wall());
+    _objects.back()->setPosition(glm::vec3(2.0f, 0.0f, 1.0));
+    _objects.push_back(new Wall());
+    _objects.back()->setPosition(glm::vec3(-1.0f, 0.0f, 2.0));
+    _objects.push_back(new Wall());
+    _objects.back()->setPosition(glm::vec3(-5.0f, -1.0f, -5.0));
+    _objects.back()->setShape(glm::vec3(10.0f, 0.02f, 10.0));
 
     _dirLight.setAmbient(glm::vec3(0.5f, 0.5f, 0.5f));
     _dirLight.setShader(_shaders);
+    _dirLight.setDepthShader(_depth);
 
     _pointLights.emplace_back(scene::PointLight(glm::vec3(9.3f, 4.3f, 0.0f), 10));
     _pointLights.emplace_back(scene::PointLight(glm::vec3(1.2f, 3.5f, 0.0f), 25));
@@ -69,8 +84,16 @@ void scene::Scene::onDraw() {
     }
 
     _maze.draw(_models, _shaders);
-    for (auto &object : _objects)
-        object->draw(_models, _shaders);
+    /*for (auto &object : _objects)
+        object->draw(_models, _shaders);*/
+}
+
+void scene::Scene::onCheckDepth() {
+    _depth->bind();
+    /*for (auto &object : _objects)
+        object->checkDepth(_models, _depth);*/
+    _maze.checkDepth(_models, _depth);
+    gl_wrapper::Shader::unBind();
 }
 
 void scene::Scene::checkKey() {

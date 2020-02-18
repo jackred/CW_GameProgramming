@@ -39,6 +39,7 @@ set(SOURCE_FILES
   source/AObject.cpp
   source/App.cpp
   source/Camera.cpp
+  source/DepthBuffer.cpp
   source/DirLight.cpp
   source/Main.cpp
   source/Mesh.cpp

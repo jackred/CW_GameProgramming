@@ -39,6 +39,8 @@ namespace scene {
         void init();
 
         void onDraw() override;
+        void onCheckDepth() override;
+
         void onMouseScroll(double x, double y) override;
 
     private:
@@ -49,9 +51,10 @@ namespace scene {
         scene::Models_t _models;
         scene::Objects_t _objects;
         gl_wrapper::Shaders_t _shaders;
+        gl_wrapper::Shader_ptr_t _depth;
         MazeDisplay _maze;
         std::vector<scene::PointLight> _pointLights;
-        scene::DirLight _dirLight = scene::DirLight(glm::vec3(0.0f, -1.0f, 0.5f));
+        scene::DirLight _dirLight = scene::DirLight(glm::vec3(-10.0f, 10.0f, -10.0f), glm::vec3(2.0f, -4.0f, 2.0f));
         Camera_ptr_t _camera = std::make_unique<Camera>(Camera());
         const std::unordered_map<int, change_camera_t> _keyMap = {
                 {GLFW_KEY_W, &scene::Camera::moveForward},

@@ -20,7 +20,7 @@ namespace gl_wrapper {
         MODEL,
         TEXTURE_DIFFUSE,
         TEXTURE_SPECULAR,
-        FRAMEBUFFER_TEXTURE
+        DEPTH
     };
 }
 

@@ -15,8 +15,7 @@ namespace scene {
     public:
         explicit Wall();
 
-        void draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders) override;
-
+        void setPosition(glm::vec3 position) override;
         void setShape(glm::vec3 shape) override;
     };
 }

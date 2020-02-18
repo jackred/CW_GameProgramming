@@ -76,6 +76,13 @@ void scene::Model::draw(const gl_wrapper::Shaders_t &shaders) {
     }
 }
 
+void scene::Model::checkDepth(const gl_wrapper::Shader_ptr_t &depth) {
+    depth->setUniformMatrix4("model_matrix", getModelMatrix());
+    for (auto &mesh : _meshList) {
+        mesh.mesh.draw(depth);
+    }
+}
+
 glm::mat4 scene::Model::getModelMatrix() {
     glm::mat4 translate = glm::translate(glm::mat4(1.0f), _position - _offset);
     glm::mat4 rotate = glm::translate(glm::mat4(1.0f), _offset);

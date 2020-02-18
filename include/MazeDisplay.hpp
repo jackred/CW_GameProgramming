@@ -21,6 +21,7 @@ namespace scene {
 
         void init();
         void draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders);
+        void checkDepth(const scene::Models_t &models, const gl_wrapper::Shader_ptr_t &depth);
         void clear();
 
     private:
