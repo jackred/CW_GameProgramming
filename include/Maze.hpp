@@ -27,13 +27,19 @@ namespace backstage {
     walls_t _walls;
     glm::vec2 _start;
     glm::vec2 _end;
+    size_t _width;
+    size_t _length;
     unsigned int countNeighbors(maze_t maze, size_t x, size_t y);
-    maze_t generateEmptyMaze(size_t width,size_t length);
+    maze_t generateEmptyMaze();
     void generateSeed();
     unsigned int ruleB3_1234Cell(maze_t maze, size_t i, size_t j);
     void ruleB3_1234Iteration();
     void generateCorridor();
     void eraseCorridor();
+    void makeBorder();
+    bool hasNeighbor(maze_t maze, size_t x, size_t y);
+    void toWallsHorizontal();
+    void toWallsVertical();
     void toWalls();
       
   public:
@@ -41,6 +47,8 @@ namespace backstage {
     walls_t getWalls() const;
     glm::vec2 getStart() const;
     glm::vec2 getEnd() const;
+    size_t getWidth() const;
+    size_t getLength() const;
     std::vector<std::vector<unsigned int>> getMaze() const;
   };
 

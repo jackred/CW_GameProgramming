@@ -25,7 +25,7 @@ namespace scene {
         void clear();
 
     private:
-        backstage::walls_t _test;
+        backstage::Maze _maze;
         std::vector<Wall*> _walls;
         Wall *_floor;
     };
