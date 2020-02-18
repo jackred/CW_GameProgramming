@@ -6,12 +6,15 @@
 
 /* author jackred@tuta.io */
 
-#include "../include/Maze.hpp"
+#include "Maze.hpp"
 
 backstage::Maze::Maze(size_t width, size_t length) {
+  srand(time(NULL));
   _maze = generateEmptyMaze(width, length);
   generateSeed();
   generateCorridor();
+  eraseCorridor();
+  toWalls();
 }
 
 backstage::maze_t backstage::Maze::generateEmptyMaze(size_t width, size_t length) {
@@ -27,9 +30,8 @@ backstage::maze_t backstage::Maze::generateEmptyMaze(size_t width, size_t length
 }
 
 void backstage::Maze::generateSeed() {
-  srand (time(NULL));
-  for (size_t i=_maze.size()/2 ; i<(_maze.size()/2)+4 ; i++) {
-    for (size_t j=_maze[i].size()/2 ; j<(_maze[i].size()/2)+4 ; j++) {
+  for (size_t i=_maze.size()/2 ; i<(_maze.size()/2)+5 ; i++) {
+    for (size_t j=_maze[i].size()/2 ; j<(_maze[i].size()/2)+5 ; j++) {
       _maze[i][j] = (rand() % 2);
     }
   }
@@ -65,9 +67,43 @@ void backstage::Maze::ruleB3_1234Iteration() {
 }
 
 void backstage::Maze::generateCorridor() {
-  for (int k = 0 ; k < _maze.size() * 4 ; k ++) {
+  for (int k = 0 ; k < std::max(_maze.size(), _maze[0].size()) * 3 ; k ++) {
+    std::cout << *this << std::endl;
     ruleB3_1234Iteration();
   }
+}
+
+void backstage::Maze::eraseCorridor() {
+  for (size_t i=0 ; i<_maze.size() ; i++) {
+    for (size_t j=0 ; j<_maze[i].size() ; j++) {
+      size_t tmpCount = countNeighbors(_maze, i, j);
+      if ((_maze[i][j] == 1) && ( tmpCount>= 1) && (tmpCount <= 5) && ((rand() % 10) == 0)){
+        _maze[i][j] = 0;
+      }
+    }
+  }
+}
+
+void backstage::Maze::toWalls() {
+  
+}
+
+/* overloaded */
+
+std::ostream& backstage::operator<<(std::ostream &os, const backstage::Maze &maze) {
+  backstage::maze_t arr = maze.getMaze();
+  os << "\033c";
+  for (size_t i=0; i<arr.size(); i++) {
+    for (size_t j=0; j<arr[i].size(); j++) {
+      if (arr[i][j] == 1) {
+        os << "\033[31m1";
+      } else {
+        os << "\033[97m0";
+      }
+    }
+    os << std::endl;
+  }
+  return os;
 }
 
 /* getters */
@@ -87,3 +123,4 @@ glm::vec2 backstage::Maze::getEnd() const {
 std::vector<std::vector<unsigned int>> backstage::Maze::getMaze() const {
   return _maze;
 }
+

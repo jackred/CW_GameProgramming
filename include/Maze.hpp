@@ -13,7 +13,6 @@
 #include <array>
 #include <iostream>
 #include <stdlib.h>
-#include <unistd.h>
 
 #include "glm/glm.hpp"
 
@@ -34,15 +33,21 @@ namespace backstage {
     unsigned int ruleB3_1234Cell(maze_t maze, size_t i, size_t j);
     void ruleB3_1234Iteration();
     void generateCorridor();
+    void eraseCorridor();
+    void toWalls();
       
   public:
-    Maze(size_t width=30,  size_t length=30);
+    Maze(size_t width=20,  size_t length=20);
     walls_t getWalls() const;
     glm::vec2 getStart() const;
     glm::vec2 getEnd() const;
     std::vector<std::vector<unsigned int>> getMaze() const;
   };
 
+  std::ostream& operator<<(std::ostream &os, const Maze &maze);
+  
 }
+
+
 
 #endif /* _MAZE_H_ */
