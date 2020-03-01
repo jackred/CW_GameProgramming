@@ -269,32 +269,6 @@ void backstage::Maze::assignEndUntilPath(size_t minDist) {
 
 /* aStar */
 
-namespace glm {
-  bool operator<(glm::vec2 vec1, glm::vec2 vec2) {
-    if (vec1[0] == vec2[0]) {
-      return (vec1[1] < vec2[1]);
-    } else {
-      return (vec1[0] < vec2[0]);
-    }
-  }
-
-  bool operator>(glm::vec2 vec1, glm::vec2 vec2) {
-    if (vec1[0] == vec2[0]) {
-      return (vec1[1] > vec2[1]);
-    } else {
-      return (vec1[0] > vec2[0]);
-    }
-  }
-
-  bool operator<=(glm::vec2 vec1, glm::vec2 vec2) {
-    return (glm::lessThanEqual(vec1, vec2)[0] || glm::lessThanEqual(vec1, vec2)[1]);
-  }
-
-  bool operator>=(glm::vec2 vec1, glm::vec2 vec2) {
-    return (glm::greaterThanEqual(vec1, vec2)[0] || glm::lessThanEqual(vec1, vec2)[1]);
-  }
-}
-
 size_t backstage::Maze::manhattanDistance(glm::vec2 x, glm::vec2 y) {
   return abs(x[0] - y[0]) + abs(x[1] - y[1]);
 }

@@ -19,6 +19,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include "glm/glm.hpp"
+#include "GLMComparison.hpp"
 
 namespace backstage {
 
