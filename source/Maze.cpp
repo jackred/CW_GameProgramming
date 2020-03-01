@@ -4,7 +4,7 @@
  * If a copy of the ML was not distributed with this
  * file, You can obtain one at https://opensource.org/licenses/MIT */
 
-/* author jackred@tuta.io */
+/* author: jackred@tuta.io */
 
 #include "Maze.hpp"
 
@@ -18,6 +18,9 @@ backstage::Maze::Maze(size_t width, size_t length) {
   eraseCorridor();
   makeBorder();
   toWalls();
+  assignStart();
+  assignEndUntilPath();
+  
 }
 
 backstage::maze_t backstage::Maze::generateEmptyMaze() {
@@ -80,7 +83,7 @@ void backstage::Maze::eraseCorridor() {
   for (size_t i=0 ; i<_width ; i++) {
     for (size_t j=0 ; j<_length ; j++) {
       size_t tmpCount = countNeighbors(_maze, i, j);
-      if ((_maze[i][j] == 1) && ( tmpCount>= 1) && (tmpCount <= 5) && ((rand() % 10) == 0)){
+      if ((_maze[i][j] == 1) && ( tmpCount>= 1) && (tmpCount <= 5) && ((rand() % 9) == 0)){
         _maze[i][j] = 0;
       }
     }
@@ -173,16 +176,25 @@ void backstage::Maze::toWalls() {
 
 std::ostream& backstage::operator<<(std::ostream &os, const backstage::Maze &maze) {
   backstage::maze_t arr = maze.getMaze();
-  os << "\033c";
+  // os << "\033c";
   for (size_t i=0; i<maze.getWidth(); i++) {
     for (size_t j=0; j<maze.getLength(); j++) {
-      if (arr[i][j] == 1) {
-        os << "\033[31m1";
-      } else {
-        os << "\033[97m0";
+      if ((i == maze.getStart()[0]) && (j == maze.getStart()[1])) {
+        os << "\033[42m "; // start
+      } else  if ((i == maze.getEnd()[0]) && (j == maze.getEnd()[1])) {
+        os << "\033[41m "; // end
+      } else if (maze._aStar2.find(glm::vec2(i, j)) != maze._aStar2.end()) {
+        os << "\033[45m-"; // path
+      }
+      else {
+        if (arr[i][j] == 1) {
+          os << "\033[46m "; // 1
+        } else {
+          os << "\033[49m "; // 0
+        }
       }
     }
-    os << std::endl;
+    os << "\033[49m " << std::endl;
   }
   return os;
 }
@@ -211,4 +223,143 @@ size_t backstage::Maze::getLength() const {
 
 std::vector<std::vector<unsigned int>> backstage::Maze::getMaze() const {
   return _maze;
+}
+
+std::stack<glm::vec2> backstage::Maze::getAStar() const {
+  return _aStar;
+}
+
+
+
+/* path */
+void backstage::Maze::setStart(glm::vec2 start) {
+  _start = start;
+}
+
+void backstage::Maze::assignStart() {
+  size_t x;
+  size_t y;
+  do {
+    x = rand() % _width;
+    y = rand() % _length;
+  } while(_maze[x][y] == 1);
+  _start = glm::vec2(x, y);
+}
+
+
+void backstage::Maze::assignEnd(size_t minDist) {
+  size_t x;
+  size_t y;
+  do {
+    x = rand() % _width;
+    y = rand() % _length;
+  } while((_maze[x][y] == 1) || (manhattanDistance(_start, glm::vec2(x, y)) <= minDist));
+  _end = glm::vec2(x, y);
+}
+
+// calcul aStar and put end somehere
+void backstage::Maze::assignEndUntilPath(size_t minDist) {
+  int i = 0;
+  do {
+    assignEnd(minDist);
+    aStar();
+    i++;
+  } while(_aStar.empty());
+}
+
+/* aStar */
+
+namespace glm {
+  bool operator<(glm::vec2 vec1, glm::vec2 vec2) {
+    if (vec1[0] == vec2[0]) {
+      return (vec1[1] < vec2[1]);
+    } else {
+      return (vec1[0] < vec2[0]);
+    }
+  }
+
+  bool operator>(glm::vec2 vec1, glm::vec2 vec2) {
+    if (vec1[0] == vec2[0]) {
+      return (vec1[1] > vec2[1]);
+    } else {
+      return (vec1[0] > vec2[0]);
+    }
+  }
+
+  bool operator<=(glm::vec2 vec1, glm::vec2 vec2) {
+    return (glm::lessThanEqual(vec1, vec2)[0] || glm::lessThanEqual(vec1, vec2)[1]);
+  }
+
+  bool operator>=(glm::vec2 vec1, glm::vec2 vec2) {
+    return (glm::greaterThanEqual(vec1, vec2)[0] || glm::lessThanEqual(vec1, vec2)[1]);
+  }
+}
+
+size_t backstage::Maze::manhattanDistance(glm::vec2 x, glm::vec2 y) {
+  return abs(x[0] - y[0]) + abs(x[1] - y[1]);
+}
+
+void backstage::Maze::insertInPosition(glm::vec2 toInsert, size_t heuristicDist, std::list<glm::vec2> &toVisit, std::map<size_t, std::tuple<glm::vec2, size_t, size_t>> mapPoint) {
+  std::list<glm::vec2>::iterator it=toVisit.begin();
+  while ((it != toVisit.end()) && (std::get<1>(mapPoint[_length * (*it)[0] + (*it)[1]]) + std::get<2>(mapPoint[_length*(*it)[0] + (*it)[1]]) < heuristicDist)) {
+    it++;
+  }
+  toVisit.insert(it, toInsert);
+}
+
+void backstage::Maze::expand(glm::vec2 toExpand, size_t x, size_t y, std::list<glm::vec2> &toVisit, std::map<size_t, std::tuple<glm::vec2, size_t, size_t>> &mapPoint, std::set<glm::vec2> visited) {
+  if ((x > 0) && (x < _maze.size()) && (y > 0) && (y < _maze.size()) && (_maze[x][y] == 0)) { // if in maze and a cell
+    glm::vec2 tmp = glm::vec2(x, y);
+    size_t distance = manhattanDistance(_end, tmp);
+    size_t distToStart = std::get<2>(mapPoint[_length * toExpand[0] + toExpand[1]])+1;
+    if (mapPoint.find(_length*x + y) == mapPoint.end()){
+      mapPoint.insert(std::pair<size_t, std::tuple<glm::vec2, size_t, size_t>>(_length*x+y, std::tuple<glm::vec2, size_t, size_t>(toExpand, distance, distToStart)));
+      insertInPosition(tmp, distToStart + distance, toVisit, mapPoint);
+    } else if ((std::get<1>(mapPoint[_length*x + y]) + std::get<2>(mapPoint[_length*x + y])) >= (distance+distToStart)) {
+      mapPoint.insert(std::pair<size_t, std::tuple<glm::vec2, size_t, size_t>>(_length*x+y, std::tuple<glm::vec2, size_t, size_t>(toExpand, distance, distToStart)));
+    }
+  }
+ 
+}
+
+void backstage::Maze::expandAll(glm::vec2 toExpand, std::list<glm::vec2> &toVisit, std::map<size_t, std::tuple<glm::vec2, size_t, size_t>> &mapPoint, std::set<glm::vec2> visited) {
+  expand(toExpand, toExpand[0], toExpand[1]+1, toVisit, mapPoint, visited); // south
+  expand(toExpand, toExpand[0], toExpand[1]-1, toVisit, mapPoint, visited); // north
+  expand(toExpand, toExpand[0]+1, toExpand[1], toVisit, mapPoint, visited); // east
+  expand(toExpand, toExpand[0]-1, toExpand[1], toVisit, mapPoint, visited); // west
+}
+
+
+std::stack<glm::vec2> backstage::Maze::rebuildPath(std::map<size_t, std::tuple<glm::vec2, size_t, size_t>> mapPoint, std::stack<glm::vec2> acc, std::set<glm::vec2> acc2) {
+  glm::vec2 tmp = std::get<0>(mapPoint[_length * acc.top()[0] + acc.top()[1]]);
+  if (tmp == acc.top()) {
+    _aStar2 = acc2;
+    return acc;
+  } else {
+    acc.push(tmp);
+    acc2.insert(tmp);
+    return rebuildPath(mapPoint, acc, acc2);
+  }
+}
+
+void backstage::Maze::aStar() {
+  std::set<glm::vec2> visited;
+  std::list<glm::vec2> toVisit;
+  // X : from Y, h, g
+  std::map<size_t, std::tuple<glm::vec2, size_t, size_t>> mapPoint;
+  toVisit.push_front(_start);
+  mapPoint.insert(std::pair<size_t, std::tuple<glm::vec2, size_t, size_t>>(_length * _start[0] + _start[1], std::tuple<glm::vec2, size_t, size_t>(_start, manhattanDistance(_start, _end), 0)));
+  while ((visited.find(_end) == visited.end()) && (toVisit.size() != 0)) {
+    glm::vec2 tmp = toVisit.front();
+    toVisit.pop_front();
+    if (visited.find(tmp) == visited.end()) {
+      visited.insert(tmp);
+      expandAll(tmp, toVisit, mapPoint, visited);
+    }
+  }
+  if (visited.find(_end) == visited.end()) {
+    _aStar = std::stack<glm::vec2>();
+  } else {
+    _aStar = rebuildPath(mapPoint, std::stack<glm::vec2>({_end}), std::set<glm::vec2>({_end}));
+  }
 }

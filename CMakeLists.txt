@@ -42,6 +42,7 @@ set(SOURCE_FILES
   source/Camera.cpp
   source/DepthBuffer.cpp
   source/DirLight.cpp
+  source/GLMComparison.cpp
   source/Main.cpp
   source/Mesh.cpp
   source/Maze.cpp
