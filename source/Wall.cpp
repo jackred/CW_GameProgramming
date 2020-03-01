@@ -5,7 +5,7 @@
 #include "Wall.hpp"
 
 scene::Wall::Wall() : AObject(ModelType::CUBE) {
-    //_size = _size * glm::vec3(2.0f, 2.2f, 2.0f);
+    _size = _size * glm::vec3(2.0f, 1.2f, 2.0f);
 }
 
 void scene::Wall::setPosition(glm::vec3 position) {

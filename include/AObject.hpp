@@ -38,7 +38,7 @@ namespace scene {
         const unsigned int _id;
         glm::vec3 _position = glm::vec3(0.0f, 0.0f, 0.0f);
         glm::vec3 _orientation = glm::vec3(0.0f, 0.0f, 0.0f);
-        glm::vec3 _offset = glm::vec3(0.5f, 0.5f, 0.5f);
+        glm::vec3 _offset = glm::vec3(0.0f, 0.0f, 0.0f);
         glm::vec3 _shape = glm::vec3(1.0f, 1.0f, 1.0f);
         glm::vec3 _size = glm::vec3(1.0f, 1.0f, 1.0f);
 

@@ -38,6 +38,7 @@ set(SOURCE_FILES
   source/ALoader.cpp
   source/AObject.cpp
   source/App.cpp
+  source/Ball.cpp
   source/Camera.cpp
   source/DepthBuffer.cpp
   source/DirLight.cpp
@@ -49,6 +50,7 @@ set(SOURCE_FILES
   source/Model.cpp
   source/MTLLoader.cpp
   source/OBJLoader.cpp
+  source/Particles.cpp
   source/PointLight.cpp
   source/Scene.cpp
   source/Shader.cpp

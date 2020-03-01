@@ -17,12 +17,14 @@
 
 #include "App.hpp"
 #include "AObject.hpp"
+#include "Ball.hpp"
 #include "Camera.hpp"
 #include "MazeDisplay.hpp"
 #include "DirLight.hpp"
 #include "Mesh.hpp"
 #include "Model.hpp"
 #include "Misc.hpp"
+#include "Particles.hpp"
 #include "PointLight.hpp"
 #include "Shader.hpp"
 
@@ -52,6 +54,7 @@ namespace scene {
         scene::Objects_t _objects;
         gl_wrapper::Shaders_t _shaders;
         gl_wrapper::Shader_ptr_t _depth;
+        gl_wrapper::Particles _particles;
         MazeDisplay _maze;
         std::vector<scene::PointLight> _pointLights;
         scene::DirLight _dirLight = scene::DirLight(glm::vec3(-10.0f, 10.0f, -10.0f), glm::vec3(2.0f, -4.0f, 2.0f));

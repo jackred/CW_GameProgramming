@@ -61,19 +61,19 @@ void gl_wrapper::App::start() {
         glClearColor(0.19f, 0.22f, 0.23f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        _depthBuffer.setViewPort();
+        /*_depthBuffer.setViewPort();
         _depthBuffer.bind();
         glClear(GL_DEPTH_BUFFER_BIT);
-        //glFrontFace(GL_CW);
+        glFrontFace(GL_CW);
         //glCullFace(GL_FRONT);
         onCheckDepth();
         //glCullFace(GL_BACK);
         //glFrontFace(GL_CCW);
-        DepthBuffer::unBind();
+        DepthBuffer::unBind();*/
 
         _window.setViewport();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        _depthBuffer.bindTexture();
+        //_depthBuffer.bindTexture();
         onDraw();
 
         glfwPollEvents();

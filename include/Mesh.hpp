@@ -27,6 +27,9 @@ namespace gl_wrapper {
         void draw(const Shader_ptr_t &shader);
         void clearBuffers();
 
+        GLuint getVaoID() const;
+        size_t getIndicesSize() const;
+
     private:
         void setupMesh();
         static unsigned int setTexture(const std::string &path);

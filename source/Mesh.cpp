@@ -90,6 +90,14 @@ void gl_wrapper::Mesh::clearBuffers() {
      glDeleteBuffers(1, &_eboID);
 }
 
+GLuint gl_wrapper::Mesh::getVaoID() const {
+    return _vaoID;
+}
+
+size_t gl_wrapper::Mesh::getIndicesSize() const {
+    return _indices.size();
+}
+
 unsigned int gl_wrapper::Mesh::setTexture(const std::string &path) {
     unsigned int texture = 0;
     int width = 0;

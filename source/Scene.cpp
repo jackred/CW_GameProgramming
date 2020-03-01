@@ -25,6 +25,8 @@ void scene::Scene::init() {
     std::string fsTexturePath = "../shader/texture_fs.glsl";
     std::string vsDepthPath = "../shader/depth_vs.glsl";
     std::string fsDepthPath = "../shader/depth_fs.glsl";
+    std::string vsParticlesPath = "../shader/particle_vs.glsl";
+    std::string fsParticlesPath = "../shader/particle_fs.glsl";
 
     _shaders.push_back(std::make_unique<gl_wrapper::Shader>(
             gl_wrapper::Shader(vsModelPath, fsModelPath, gl_wrapper::ShaderType::MODEL)
@@ -36,23 +38,21 @@ void scene::Scene::init() {
     _shaders.push_back(std::make_unique<gl_wrapper::Shader>(
             gl_wrapper::Shader(vsTexturePath, fsTexturePath, gl_wrapper::ShaderType::TEXTURE_DIFFUSE)
     ));
+    _shaders.push_back(std::make_unique<gl_wrapper::Shader>(
+            gl_wrapper::Shader(vsParticlesPath, fsParticlesPath, gl_wrapper::ShaderType::PARTICLES)
+    ));
     _depth = std::make_unique<gl_wrapper::Shader>(
             gl_wrapper::Shader(vsDepthPath, fsDepthPath, gl_wrapper::ShaderType::DEPTH)
     );
 
     std::string path = "../resource/cube.obj";
     _models.emplace(ModelType::CUBE, new Model(path));
+    path = "../resource/ball.obj";
+    _models.emplace(ModelType::BALL, new Model(path));
 
     _maze.init();
-    _objects.push_back(new Wall());
+    _objects.push_back(new Ball());
     _objects.back()->setPosition(glm::vec3(0.0f, 1.5f, 0.0));
-    _objects.push_back(new Wall());
-    _objects.back()->setPosition(glm::vec3(2.0f, 0.0f, 1.0));
-    _objects.push_back(new Wall());
-    _objects.back()->setPosition(glm::vec3(-1.0f, 0.0f, 2.0));
-    _objects.push_back(new Wall());
-    _objects.back()->setPosition(glm::vec3(-5.0f, -1.0f, -5.0));
-    _objects.back()->setShape(glm::vec3(10.0f, 0.02f, 10.0));
 
     _dirLight.setAmbient(glm::vec3(0.5f, 0.5f, 0.5f));
     _dirLight.setShader(_shaders);
@@ -78,20 +78,23 @@ void scene::Scene::onDraw() {
         shader->bind();
         shader->setUniformMatrix4("view_matrix", _camera->getViewMatrix());
         shader->setUniformMatrix4("proj_matrix", _camera->getProjectionMatrix(getWindow()));
-        if (shader->getType() != gl_wrapper::ShaderType::LIGHT)
+        if (shader->getType() == gl_wrapper::ShaderType::MODEL
+            || shader->getType() == gl_wrapper::ShaderType::TEXTURE_DIFFUSE)
             shader->setUniformVector3("viewPos", _camera->getCameraPosition());
+        if (shader->getType() == gl_wrapper::ShaderType::PARTICLES)
+            _particles.draw(shader);
         gl_wrapper::Shader::unBind();
     }
 
     _maze.draw(_models, _shaders);
-    /*for (auto &object : _objects)
-        object->draw(_models, _shaders);*/
+    for (auto &object : _objects)
+        object->draw(_models, _shaders);
 }
 
 void scene::Scene::onCheckDepth() {
     _depth->bind();
-    /*for (auto &object : _objects)
-        object->checkDepth(_models, _depth);*/
+    for (auto &object : _objects)
+        object->checkDepth(_models, _depth);
     _maze.checkDepth(_models, _depth);
     gl_wrapper::Shader::unBind();
 }
@@ -110,6 +113,8 @@ void scene::Scene::checkKey() {
             _mode = GL_FILL;
         _pressed = false;
     }
+    if (_keyCode[GLFW_KEY_ESCAPE])
+        getWindow().setClose(true);
 }
 
 void scene::Scene::onMouseScroll(double x, double y) {

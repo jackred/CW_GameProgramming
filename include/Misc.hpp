@@ -20,7 +20,8 @@ namespace gl_wrapper {
         MODEL,
         TEXTURE_DIFFUSE,
         TEXTURE_SPECULAR,
-        DEPTH
+        DEPTH,
+        PARTICLES
     };
 }
 
@@ -70,7 +71,7 @@ namespace scene {
     enum class ModelType {
         UNKNOWN = 0,
         CUBE,
-        MUSHROOM
+        BALL
     };
 }
 

@@ -23,7 +23,8 @@ const glm::vec3 &scene::PointLight::getPosition() const {
 
 void scene::PointLight::setShader(const gl_wrapper::Shaders_t &shaders) const {
     for (auto &shader : shaders) {
-        if (shader->getType() != gl_wrapper::ShaderType::LIGHT) {
+        if (shader->getType() == gl_wrapper::ShaderType::MODEL
+            || shader->getType() == gl_wrapper::ShaderType::TEXTURE_DIFFUSE) {
             shader->bind();
             ALight::setShader(shader);
             shader->setUniformVector3(getUniformName("position").c_str(), _position);

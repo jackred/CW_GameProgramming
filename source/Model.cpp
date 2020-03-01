@@ -55,7 +55,8 @@ void scene::Model::draw(const gl_wrapper::Shaders_t &shaders) {
     auto model = getModelMatrix();
     auto inverse_model = glm::transpose(glm::inverse(model));
     for (auto &shader : shaders) {
-        if (shader->getType() == gl_wrapper::ShaderType::LIGHT)
+        if (shader->getType() != gl_wrapper::ShaderType::MODEL
+            && shader->getType() != gl_wrapper::ShaderType::TEXTURE_DIFFUSE)
             continue;
         shader->bind();
         shader->setUniformMatrix4("model_matrix", model);
