@@ -12,22 +12,25 @@
 
 #include "Maze.hpp"
 #include "Wall.hpp"
+#include "Instance.hpp"
 
 namespace scene {
 
     class MazeDisplay {
     public:
-        MazeDisplay() = default;
+        MazeDisplay();
 
         void init();
         void draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders);
-        void checkDepth(const scene::Models_t &models, const gl_wrapper::Shader_ptr_t &depth);
         void clear();
+
+    private:
+        void initFloor(const glm::vec2 &size);
 
     private:
         backstage::Maze _maze;
         std::vector<Wall*> _walls;
-        Wall *_floor;
+        gl_wrapper::Instance _floor;
     };
 }
 

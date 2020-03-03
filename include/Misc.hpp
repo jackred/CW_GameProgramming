@@ -21,7 +21,7 @@ namespace gl_wrapper {
         TEXTURE_DIFFUSE,
         TEXTURE_SPECULAR,
         DEPTH,
-        PARTICLES
+        INSTANCE
     };
 }
 

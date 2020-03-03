@@ -4,86 +4,26 @@
 
 #include "Particles.hpp"
 
-gl_wrapper::Particles::Particles() {
-    std::string objPath = "../resource/cube.obj";
-    auto objModel = loader::OBJLoader(objPath).load();
+scene::Particles::Particles() : _instances(MAX_PARTICLES) {}
 
-    for (unsigned int i = 0; i < objModel.size(); i++)
-        _meshList.emplace_back(gl_wrapper::Mesh(objModel.getVertices(i), objModel.getIndices(i)));
-
-    _modelMatrices.reserve(MAX_PARTICLES);
-    //_particlesContainer.reserve(_maxParticles);
-
-    glGenBuffers(1, &_vertexArrayID);
-    glBindBuffer(GL_ARRAY_BUFFER, _vertexArrayID);
-    glBufferData(GL_ARRAY_BUFFER, _actualAmount * sizeof(ModelList), _modelMatrices.data(), GL_STATIC_DRAW);
-
-    for (auto &mesh : _meshList) {
-
-        glBindVertexArray(mesh.getVaoID());
-        // set attribute pointers for matrix (4 times vec4)
-
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(ModelList),
-                (void *) offsetof(ModelList, color));
-
-        glEnableVertexAttribArray(3);
-        glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(ModelList),
-                (void *) offsetof(ModelList, matrix));
-
-        glEnableVertexAttribArray(4);
-        glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(ModelList),
-                (void *) (offsetof(ModelList, matrix) + (sizeof(glm::vec4))));
-
-        glEnableVertexAttribArray(5);
-        glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(ModelList),
-                (void *) (offsetof(ModelList, matrix) + (2 * sizeof(glm::vec4))));
-
-        glEnableVertexAttribArray(6);
-        glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(ModelList),
-                (void *) (offsetof(ModelList, matrix) + (3 * sizeof(glm::vec4))));
-
-        glVertexAttribDivisor(2, 1);
-        glVertexAttribDivisor(3, 1);
-        glVertexAttribDivisor(4, 1);
-        glVertexAttribDivisor(5, 1);
-        glVertexAttribDivisor(6, 1);
-
-        glBindVertexArray(0);
-    }
-}
-
-gl_wrapper::Particles::~Particles() {
-    for (auto &it : _meshList)
-        it.clearBuffers();
-}
-
-void gl_wrapper::Particles::draw(const Shader_ptr_t &shader) {
+void scene::Particles::draw(const gl_wrapper::Shader_ptr_t &shader) {
     this->refreshParticles();
 
-    shader->bind();
-
-    for (auto &mesh : _meshList) {
-        glBindVertexArray(mesh.getVaoID());
-        glDrawElementsInstanced(GL_TRIANGLES, mesh.getIndicesSize(), GL_UNSIGNED_INT, nullptr, _actualAmount);
-        glBindVertexArray(0);
-    }
-
-    gl_wrapper::Shader::unBind();
+    _instances.draw(shader);
 }
 
-void gl_wrapper::Particles::refreshParticles() {
+void scene::Particles::refreshParticles() {
     double currentTime = glfwGetTime();
     double delta = currentTime - _lastTime;
     _lastTime = currentTime;
 
-    int nbParticles = (int) (delta * 2000.0);
-    if (nbParticles > (int) (0.016f * 2000.0))
-        nbParticles = (int) (0.016f * 2000.0);
+    int nbParticles = (int) (delta * MAX_PARTICLES / 5);
+    if (nbParticles > (int) (0.016f * MAX_PARTICLES / 5))
+        nbParticles = (int) (0.016f * MAX_PARTICLES / 5);
 
-    for(int i = 0; i < nbParticles; i++){
+    for (int i = 0; i < nbParticles; i++) {
         int index = this->findUnusedParticle();
-        _particlesContainer[index].life = 4.0f;
+        _particlesContainer[index].life = 5.0f;
         _particlesContainer[index].pos = glm::vec3(0.0f, 1.0f, 0.0f);
 
         float spread = 1.5f;
@@ -111,8 +51,8 @@ void gl_wrapper::Particles::refreshParticles() {
         _particlesContainer[index].size = (rand() % 1000) / 2000.0f + 0.1f;
     }
 
-    _actualAmount = 0;
-    for(int i = 0; i < MAX_PARTICLES; i++){
+    unsigned int actual_amount = 0;
+    for (int i = 0; i < MAX_PARTICLES; i++) {
 
         Particle &p = _particlesContainer[i];
 
@@ -122,29 +62,25 @@ void gl_wrapper::Particles::refreshParticles() {
             if (p.life > 0.0f){
 
                 p.speed += glm::vec3(0.0f, -9.81f, 0.0f) * (float) delta * 0.5f;
-                p.pos += p.speed * (float) delta;
-
-                if (p.pos.y < 0.0f)
-                    p.pos.y = 0.0f;
+                if (p.pos.y + p.speed.y * (float) delta > (0.1f * p.size) / 2)
+                    p.pos += p.speed * (float) delta;
 
                 glm::mat4 translate = glm::translate(glm::mat4(1.0f), p.pos);
                 glm::mat4 rotate = glm::mat4(1.0f);
                 glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
                 scale = glm::scale(scale, glm::vec3(p.size));
 
-                _modelMatrices[_actualAmount].color = p.rgb;
-                _modelMatrices[_actualAmount].matrix = translate * rotate * scale;
+                _instances[actual_amount].color = p.rgb;
+                _instances[actual_amount].matrix = translate * rotate * scale;
 
             }
-            _actualAmount++;
+            actual_amount++;
         }
     }
-
-    glBindBuffer(GL_ARRAY_BUFFER, _vertexArrayID);
-    glBufferData(GL_ARRAY_BUFFER, _actualAmount * sizeof(ModelList), _modelMatrices.data(), GL_STATIC_DRAW);
+    _instances.updateModel(actual_amount);
 }
 
-int gl_wrapper::Particles::findUnusedParticle() {
+int scene::Particles::findUnusedParticle() {
     for (int i = _lastUsedParticle; i < MAX_PARTICLES; i++){
         if (_particlesContainer[i].life < 0){
             _lastUsedParticle = i;

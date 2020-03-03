@@ -25,8 +25,8 @@ void scene::Scene::init() {
     std::string fsTexturePath = "../shader/texture_fs.glsl";
     std::string vsDepthPath = "../shader/depth_vs.glsl";
     std::string fsDepthPath = "../shader/depth_fs.glsl";
-    std::string vsParticlesPath = "../shader/particle_vs.glsl";
-    std::string fsParticlesPath = "../shader/particle_fs.glsl";
+    std::string vsParticlesPath = "../shader/instance_vs.glsl";
+    std::string fsParticlesPath = "../shader/instance_fs.glsl";
 
     _shaders.push_back(std::make_unique<gl_wrapper::Shader>(
             gl_wrapper::Shader(vsModelPath, fsModelPath, gl_wrapper::ShaderType::MODEL)
@@ -39,7 +39,7 @@ void scene::Scene::init() {
             gl_wrapper::Shader(vsTexturePath, fsTexturePath, gl_wrapper::ShaderType::TEXTURE_DIFFUSE)
     ));
     _shaders.push_back(std::make_unique<gl_wrapper::Shader>(
-            gl_wrapper::Shader(vsParticlesPath, fsParticlesPath, gl_wrapper::ShaderType::PARTICLES)
+            gl_wrapper::Shader(vsParticlesPath, fsParticlesPath, gl_wrapper::ShaderType::INSTANCE)
     ));
     _depth = std::make_unique<gl_wrapper::Shader>(
             gl_wrapper::Shader(vsDepthPath, fsDepthPath, gl_wrapper::ShaderType::DEPTH)
@@ -81,7 +81,7 @@ void scene::Scene::onDraw() {
         if (shader->getType() == gl_wrapper::ShaderType::MODEL
             || shader->getType() == gl_wrapper::ShaderType::TEXTURE_DIFFUSE)
             shader->setUniformVector3("viewPos", _camera->getCameraPosition());
-        if (shader->getType() == gl_wrapper::ShaderType::PARTICLES)
+        if (shader->getType() == gl_wrapper::ShaderType::INSTANCE)
             _particles.draw(shader);
         gl_wrapper::Shader::unBind();
     }
@@ -95,7 +95,6 @@ void scene::Scene::onCheckDepth() {
     _depth->bind();
     for (auto &object : _objects)
         object->checkDepth(_models, _depth);
-    _maze.checkDepth(_models, _depth);
     gl_wrapper::Shader::unBind();
 }
 

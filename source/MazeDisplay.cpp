@@ -4,37 +4,64 @@
 
 #include <MazeDisplay.hpp>
 
-void scene::MazeDisplay::init() {
-  backstage::walls_t _test = _maze.getWalls();
-  const glm::vec2 size = glm::vec2(_maze.getWidth(), _maze.getLength());
+scene::MazeDisplay::MazeDisplay() : _floor(1000) {}
 
-  for (const auto &it : _test) {
-    auto *cube = new scene::Wall();
-    const glm::vec2 &start = it[0];
-    const glm::vec2 &end = it[1];
-    cube->setPosition(glm::vec3(start.x - size.x / 2, 1.0f, start.y - size.y / 2));
-    cube->setShape(glm::vec3(1.0f + end.x - start.x, 1.0f, 1.0f + end.y - start.y));
-    _walls.push_back(cube);
-  }
-  _floor = new scene::Wall();
-  _floor->setPosition(glm::vec3(-size.x / 2, 0, -size.y / 2));
-  _floor->setShape(glm::vec3(size.x, 0.2f, size.y));
+void scene::MazeDisplay::init() {
+    backstage::walls_t _test = _maze.getWalls();
+    const glm::vec2 size(_maze.getWidth(), _maze.getLength());
+
+    for (const auto &it : _test) {
+        auto *cube = new scene::Wall();
+        const glm::vec2 &start = it[0];
+        const glm::vec2 &end = it[1];
+        cube->setPosition(glm::vec3(start.x - size.x / 2, 1.0f, start.y - size.y / 2));
+        cube->setShape(glm::vec3(1.0f + end.x - start.x, 1.0f, 1.0f + end.y - start.y));
+
+        _walls.push_back(cube);
+    }
+
+    initFloor(size);
 }
 
 void scene::MazeDisplay::draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders) {
-  for (const auto &it : _walls)
-    it->draw(models, shaders);
-  _floor->draw(models, shaders);
-}
-
-void scene::MazeDisplay::checkDepth(const scene::Models_t &models, const gl_wrapper::Shader_ptr_t &depth) {
-  for (const auto &it : _walls)
-    it->checkDepth(models, depth);
-  _floor->checkDepth(models, depth);
+    for (const auto &it : _walls)
+        it->draw(models, shaders);
+    for (auto &shader : shaders)
+        if (shader->getType() == gl_wrapper::ShaderType::INSTANCE)
+            _floor.draw(shader);
 }
 
 void scene::MazeDisplay::clear() {
-  for (const auto &it : _walls)
-    delete it;
-  delete _floor;
+    for (const auto &it : _walls)
+        delete it;
+}
+
+void scene::MazeDisplay::initFloor(const glm::vec2 &size) {
+    const size_t chunk_nb = size.x * size.y;
+    const glm::vec3 color(0.39f, 0.17f, 0.03f);
+    std::stack<glm::vec2> path = _maze.getAStar();
+
+    unsigned int i = 0;
+    for (unsigned int x = 0; x < (int) size.x; x++) {
+        for (unsigned int y = 0; y < (int) size.y; y++) {
+            const glm::vec2 pos((float) x - size.x / 2, (float) y - size.y / 2);
+
+            glm::mat4 translate = glm::translate(glm::mat4(1.0f),
+                    glm::vec3(pos.x * 2.0f + 1.0f, -0.1f, pos.y * 2.0f + 1.0f));
+            glm::mat4 rotate = glm::mat4(1.0f);
+            glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 0.2f, 2.0f));
+
+            _floor[i].matrix = translate * rotate * scale;
+            _floor[i].color = color;
+            i++;
+        }
+    }
+    const glm::vec3 path_color(0.39f, 0.71f, 0.67f);
+    while (!path.empty()) {
+        glm::vec2 &pos = path.top();
+        _floor[pos.x * size.y + pos.y].color = path_color;
+        path.pop();
+    }
+
+    _floor.updateModel(chunk_nb);
 }
