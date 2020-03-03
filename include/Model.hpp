@@ -39,7 +39,6 @@ namespace scene {
         void setSize(glm::vec3 size);
         void setOffset(glm::vec3 offset);
         void draw(const gl_wrapper::Shaders_t &shaders);
-        void checkDepth(const gl_wrapper::Shader_ptr_t &depth);
 
     protected:
         glm::mat4 getModelMatrix();

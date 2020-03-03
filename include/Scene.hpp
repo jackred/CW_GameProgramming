@@ -41,7 +41,6 @@ namespace scene {
         void init();
 
         void onDraw() override;
-        void onCheckDepth() override;
 
         void onMouseScroll(double x, double y) override;
 
@@ -53,7 +52,6 @@ namespace scene {
         scene::Models_t _models;
         scene::Objects_t _objects;
         gl_wrapper::Shaders_t _shaders;
-        gl_wrapper::Shader_ptr_t _depth;
         Particles _particles;
         MazeDisplay _maze;
         std::vector<scene::PointLight> _pointLights;

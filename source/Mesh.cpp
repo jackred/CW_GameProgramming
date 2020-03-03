@@ -53,18 +53,6 @@ void gl_wrapper::Mesh::setupMesh() {
     glBindVertexArray(0);
 }
 
-void gl_wrapper::Mesh::setFramebufferTexture(unsigned int width, unsigned int height) {
-    _textures.clear();
-    loader::Texture texture = {0, "", loader::TextureType::FRAMEBUFFER_TEXTURE};
-    glGenTextures(1, &texture.id);
-    glBindTexture(GL_TEXTURE_2D, texture.id);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture.id, 0);
-    _textures.emplace_back(texture);
-}
-
 void gl_wrapper::Mesh::draw(const Shader_ptr_t &shader) {
     for (int i = 0; i < (int) _textures.size(); i++) {
         glActiveTexture(GL_TEXTURE0 + i);

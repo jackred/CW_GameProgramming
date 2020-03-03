@@ -40,7 +40,6 @@ set(SOURCE_FILES
   source/App.cpp
   source/Ball.cpp
   source/Camera.cpp
-  source/DepthBuffer.cpp
   source/DirLight.cpp
   source/GLMComparison.cpp
   source/Instance.cpp

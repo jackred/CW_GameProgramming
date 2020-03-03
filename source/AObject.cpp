@@ -23,16 +23,6 @@ void scene::AObject::draw(const scene::Models_t &models, const gl_wrapper::Shade
     models.at(_type)->draw(shaders);
 }
 
-void scene::AObject::checkDepth(const scene::Models_t &models, const gl_wrapper::Shader_ptr_t &depth) {
-    if (_type == ModelType::UNKNOWN)
-        return;
-    models.at(_type)->setPosition(_position);
-    models.at(_type)->setOrientation(_orientation);
-    models.at(_type)->setSize(_size * _shape);
-    models.at(_type)->setOffset(_offset);
-    models.at(_type)->checkDepth(depth);
-}
-
 void scene::AObject::setPosition(glm::vec3 position) {
     _position = position;
 }
