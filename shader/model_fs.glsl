@@ -29,7 +29,7 @@ struct DirLight_s {
     vec3 specular;
 };
 
-#define NR_POINT_LIGHTS 2
+#define NR_POINT_LIGHTS 5
 
 in vec3 fragPos;
 in vec4 fragPosLightSpace;

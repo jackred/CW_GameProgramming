@@ -4,8 +4,8 @@
 
 #include "Player.hpp"
 
-scene::Player::Player(const MazeDisplay &maze) {
-    reset(maze);
+scene::Player::Player() : _ball(ModelType::BALL), _speed(0.0f) {
+    _ball.setSize(glm::vec3(_size));
 }
 
 void scene::Player::draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders) {
@@ -45,7 +45,7 @@ void scene::Player::update(scene::Camera_ptr_t &camera, const scene::MazeDisplay
 void scene::Player::collideWithCrowd(std::vector<Crowd *> &crowd, double &delta) {
     for (auto &ball : crowd) {
         glm::vec3 newPos = _ball.getPosition() + _speed * (float) delta;
-        if (Intersect::spheres(newPos, 0.2f, ball->getPosition(), 0.1f))
+        if (Intersect::spheres(newPos, _size, ball->getPosition(), ball->getSize()))
             ball->setPlayerSpeed(_speed);
     }
 }
@@ -56,7 +56,7 @@ void scene::Player::collideWithWalls(const MazeDisplay &maze, double &delta) {
     glm::vec3 newPos = pos + _speed * (float) delta;
 
     try {
-        collision = maze.intersectSphereWalls(newPos, 0.2f);
+        collision = maze.intersectSphereWalls(newPos, _size);
     } catch (const std::runtime_error &e) {
         std::cerr << e.what() << std::endl;
         reset(maze);
@@ -74,7 +74,7 @@ void scene::Player::collideWithFloor(const MazeDisplay &maze, double &delta) {
     auto pos = _ball.getPosition();
     glm::vec3 newPos = pos + _speed * (float) delta;
 
-    normal_collision_t collision = maze.intersectSphereFloor(newPos, 0.2f);
+    normal_collision_t collision = maze.intersectSphereFloor(newPos, _size);
     if (std::get<0>(collision)) {
         pos += doCollision(collision, pos, newPos) * (float) delta;
     } else
@@ -90,7 +90,7 @@ glm::vec3 scene::Player::doCollision(normal_collision_t &collision, glm::vec3 &p
         _speed -= speedThreshold;
         return _speed;
     } else {
-        const glm::vec3 offset = normal * 0.2f;
+        const glm::vec3 offset = normal * _size;
         const glm::vec3 adj_distance = -std::get<2>(collision) - glm::abs(normal) * (pos - newPos) + offset;
         // Hypotenuse = adj / cos(a)
         // Note: cos(acos(a)) == a

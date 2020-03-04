@@ -9,7 +9,7 @@
 
 #include "glm/glm.hpp"
 
-#include "Ball.hpp"
+#include "AObject.hpp"
 #include "Camera.hpp"
 #include "Lib.hpp"
 #include "Intersect.hpp"
@@ -20,7 +20,7 @@ namespace scene {
 
     class Player {
     public:
-        Player(const MazeDisplay &maze);
+        Player();
 
         void draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders);
         void reset(const MazeDisplay &maze);
@@ -43,8 +43,9 @@ namespace scene {
         glm::vec3 &scaleMax(glm::vec3 &velocity);
 
     private:
-        Ball _ball;
+        AObject _ball;
         glm::vec3 _speed;
+        const float _size = 0.2f;
         const double _velocity = 0.1f;
         const float _maxSpeed = 1.5f;
         bool _lock = true;

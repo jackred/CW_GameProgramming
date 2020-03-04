@@ -4,7 +4,7 @@
 
 #include "Scene.hpp"
 
-scene::Scene::Scene() : App(1920, 1080, "Scene"), _player(_maze) {
+scene::Scene::Scene() : App(1920, 1080, "Scene") {
     init();
 }
 
@@ -33,6 +33,8 @@ void scene::Scene::init() {
     _models.emplace(ModelType::CUBE, new Model(path));
     path = "../resource/ball.obj";
     _models.emplace(ModelType::BALL, new Model(path));
+    path = "../resource/crowd.obj";
+    _models.emplace(ModelType::CROWD, new Model(path));
 
     _maze.init();
 
@@ -42,14 +44,25 @@ void scene::Scene::init() {
     _dirLight.setAmbient(glm::vec3(0.5f, 0.5f, 0.5f));
     _dirLight.setShader(_shaders);
 
-    _pointLights.emplace_back(scene::PointLight(glm::vec3(9.3f, 4.3f, 0.0f), 10));
-    _pointLights.emplace_back(scene::PointLight(glm::vec3(1.2f, 3.5f, 0.0f), 25));
-    _pointLights[0].setAmbient(glm::vec3(0.96f, 0.85f, 0.05f));
-    _pointLights[1].setAmbient(glm::vec3(0.82f, 0.12f, 0.05f));
-    _pointLights[1].setDiffuse(glm::vec3(0.82f, 0.12f, 0.05f));
+    _pointLights.emplace_back(scene::PointLight(glm::vec3(0.0f, 4.5f, 0.0f), 25));
+    _pointLights.emplace_back(scene::PointLight(glm::vec3(10.0f, 4.0f, 10.0f), 25));
+    _pointLights.emplace_back(scene::PointLight(glm::vec3(10.0f, 4.0f, -10.0f), 25));
+    _pointLights.emplace_back(scene::PointLight(glm::vec3(-10.0f, 4.0f, 10.0f), 25));
+    _pointLights.emplace_back(scene::PointLight(glm::vec3(-10.0f, 4.0f, -10.0f), 25));
+    _pointLights[0].setAmbient(glm::vec3(0.80f, 0.80f, 0.80f));
+    _pointLights[0].setDiffuse(glm::vec3(0.80f, 0.80f, 0.80f));
+    _pointLights[1].setAmbient(glm::vec3(0.70f, 0.18f, 0.09f));
+    _pointLights[1].setDiffuse(glm::vec3(0.70f, 0.18f, 0.09f));
+    _pointLights[2].setAmbient(glm::vec3(0.90f, 0.08f, 0.14f));
+    _pointLights[2].setDiffuse(glm::vec3(0.90f, 0.08f, 0.14f));
+    _pointLights[3].setAmbient(glm::vec3(0.82f, 0.12f, 0.05f));
+    _pointLights[3].setDiffuse(glm::vec3(0.82f, 0.12f, 0.05f));
+    _pointLights[4].setAmbient(glm::vec3(0.85f, 0.20f, 0.25f));
+    _pointLights[4].setDiffuse(glm::vec3(0.85f, 0.20f, 0.25f));
     for (auto &it : _pointLights)
         it.setShader(_shaders);
 
+    _player.reset(_maze);
     _particles.reset(_maze);
     for (auto &crowd : _crowd)
         crowd->reset(_maze);

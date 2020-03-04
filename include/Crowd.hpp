@@ -9,7 +9,7 @@
 
 #include "glm/glm.hpp"
 
-#include "Ball.hpp"
+#include "AObject.hpp"
 #include "Camera.hpp"
 #include "Lib.hpp"
 #include "Intersect.hpp"
@@ -32,6 +32,7 @@ namespace scene {
         void toggleBoids();
 
         const glm::vec3 getPosition() const;
+        const float &getSize() const;
         const unsigned int &getId() const;
 
     private:
@@ -45,11 +46,12 @@ namespace scene {
 
 
     private:
-        const unsigned int _id;
+        const unsigned int _id = 0;
         static unsigned int _idGen;
 
-        Ball _ball;
+        AObject _ball;
         glm::vec3 _speed;
+        const float _size = 0.1f;
         const float _maxSpeed = 1.5f;
         const float _maxSpace = 0.7f;
         bool _collidePlayer = false;
@@ -57,6 +59,7 @@ namespace scene {
         bool _doBoids = true;
 
         double _lastTime = glfwGetTime();
+        double _lastTimeToggle = 0;
     };
 
 }

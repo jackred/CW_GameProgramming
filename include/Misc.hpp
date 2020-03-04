@@ -17,7 +17,6 @@
 
 namespace gl_wrapper {
     enum class ShaderType {
-        LIGHT,
         MODEL,
         TEXTURE_DIFFUSE,
         TEXTURE_SPECULAR,
@@ -68,7 +67,8 @@ namespace scene {
     enum class ModelType {
         UNKNOWN = 0,
         CUBE,
-        BALL
+        BALL,
+        CROWD
     };
 
     typedef std::tuple<bool, glm::vec3, glm::vec3> normal_collision_t;

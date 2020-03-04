@@ -38,7 +38,6 @@ set(SOURCE_FILES
   source/ALoader.cpp
   source/AObject.cpp
   source/App.cpp
-  source/Ball.cpp
   source/Camera.cpp
   source/Crowd.cpp
   source/DirLight.cpp

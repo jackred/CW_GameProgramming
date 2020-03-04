@@ -17,7 +17,6 @@
 
 #include "App.hpp"
 #include "AObject.hpp"
-#include "Ball.hpp"
 #include "Camera.hpp"
 #include "Crowd.hpp"
 #include "MazeDisplay.hpp"
