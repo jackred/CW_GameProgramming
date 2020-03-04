@@ -22,8 +22,8 @@ void backstage::Maze::init(size_t minDist) {
     generateCorridor();
     eraseCorridor();
     makeBorder();
-    toWalls();
     assignStart();
+    toWalls();
     int i = 0;
     do {
       assignEnd();
@@ -178,6 +178,7 @@ void backstage::Maze::toWallsVertical() {
 }
 
 void backstage::Maze::toWalls() {
+  _walls.clear();
   toWallsHorizontal();
   toWallsVertical();
 }
