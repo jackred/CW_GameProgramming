@@ -35,6 +35,7 @@ namespace backstage {
     size_t _width;
     size_t _length;
     std::stack<glm::vec2> _aStar;
+    void init(size_t minDist=10);
     unsigned int countNeighbors(maze_t maze, size_t x, size_t y);
     maze_t generateEmptyMaze();
     void generateSeed();
@@ -48,8 +49,7 @@ namespace backstage {
     void toWallsVertical();
     void toWalls();
     void assignStart();
-    void assignEnd(size_t minDist=4);
-    void assignEndUntilPath(size_t minDist=4);
+    void assignEnd(size_t minDist=10);
     size_t manhattanDistance(glm::vec2 x, glm::vec2 y);
     void insertInPosition(glm::vec2 toInsert, size_t heuristicDist, std::list<glm::vec2> &toVisit, std::map<size_t, std::tuple<glm::vec2, size_t, size_t>> mapPoint);
     void expand(glm::vec2 toExpand, size_t x, size_t y, std::list<glm::vec2> &toVisit, std::map<size_t, std::tuple<glm::vec2, size_t, size_t>> &mapPoint, std::set<glm::vec2> visited);
@@ -59,7 +59,7 @@ namespace backstage {
 
   public:
     std::set<glm::vec2> _aStar2;
-    Maze(size_t width=20,  size_t length=20);
+    Maze(size_t width=20,  size_t length=20, size_t minDist=10);
     walls_t getWalls() const;
     glm::vec2 getStart() const;
     glm::vec2 getEnd() const;

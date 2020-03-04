@@ -8,19 +8,29 @@
 
 #include "Maze.hpp"
 
-backstage::Maze::Maze(size_t width, size_t length) {
+backstage::Maze::Maze(size_t width, size_t length, size_t minDist) {
   _width = width;
   _length = length;
   srand(time(NULL));
-  _maze = generateEmptyMaze();
-  generateSeed();
-  generateCorridor();
-  eraseCorridor();
-  makeBorder();
-  toWalls();
-  assignStart();
-  assignEndUntilPath();
-  
+  init(minDist);  
+}
+
+void backstage::Maze::init(size_t minDist) {
+  do {
+    _maze = generateEmptyMaze();
+    generateSeed();
+    generateCorridor();
+    eraseCorridor();
+    makeBorder();
+    toWalls();
+    assignStart();
+    int i = 0;
+    do {
+      assignEnd();
+      aStar();
+      i++;
+    } while(_aStar.empty() && (i < 200));
+  } while(_aStar.empty());
 }
 
 backstage::maze_t backstage::Maze::generateEmptyMaze() {
@@ -73,7 +83,7 @@ void backstage::Maze::ruleB3_1234Iteration() {
 }
 
 void backstage::Maze::generateCorridor() {
-  for (int i = 0 ; i < 30 ; i++) {
+  for (int i = 0 ; i < std::max(_length, _width) ; i++) {
     // std::cout << *this << std::endl;
     ruleB3_1234Iteration();
   }
@@ -255,16 +265,6 @@ void backstage::Maze::assignEnd(size_t minDist) {
     y = rand() % _length;
   } while((_maze[x][y] == 1) || (manhattanDistance(_start, glm::vec2(x, y)) <= minDist));
   _end = glm::vec2(x, y);
-}
-
-// calcul aStar and put end somehere
-void backstage::Maze::assignEndUntilPath(size_t minDist) {
-  int i = 0;
-  do {
-    assignEnd(minDist);
-    aStar();
-    i++;
-  } while(_aStar.empty());
 }
 
 /* aStar */
