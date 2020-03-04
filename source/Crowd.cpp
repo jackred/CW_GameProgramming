@@ -17,8 +17,8 @@ std::ostream &operator<<(std::ostream &stream, const glm::vec3 &vec) {
 
 void scene::Crowd::draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders) {
     _collidePlayer = false;
-    /*for (auto collide : _collideCrowd)
-        collide = false;*/
+    for (auto collide : _collideCrowd)
+        collide = false;
 
     _ball.draw(models, shaders);
 }
@@ -29,7 +29,7 @@ void scene::Crowd::reset(const scene::MazeDisplay &maze) {
             std::cos(_id * (360.0f / _idGen) * M_PI / 180.0f));
     _speed = glm::vec3(0.0f);
     _ball.setPosition(glm::vec3(start.x + offset.x / 1.5f, 1.0f, start.y + offset.y / 1.5f));
-    // _collideCrowd.resize(_idGen);
+    _collideCrowd.resize(_idGen);
 }
 
 void scene::Crowd::update(const scene::MazeDisplay &maze, const glm::vec3 &player, const std::vector<Crowd *> &crowds) {
@@ -62,11 +62,15 @@ void scene::Crowd::collideWithPlayer(const glm::vec3 &player, double &delta) {
 
 void scene::Crowd::collideWithCrowd(const std::vector<Crowd *> &crowds, double &delta) {
     for (auto &ball : crowds) {
-        if (ball->getId() == _id)
-            continue;
-        glm::vec3 newPos = _ball.getPosition() + _speed * (float) delta;
-        if (Intersect::spheres(newPos, 0.1f, ball->getPosition(), 0.1f))
-            _speed = -_speed;
+        auto &id = ball->getId();
+        if (id != _id && !_collideCrowd[id]) {
+            glm::vec3 newPos = _ball.getPosition() + _speed * (float) delta;
+            if (Intersect::spheres(newPos, 0.1f, ball->getPosition(), 0.1f)) {
+                _speed = -_speed;
+                _collideCrowd[id] = true;
+                ball->inverseSpeed(_id);
+            }
+        }
     }
 }
 
@@ -138,6 +142,13 @@ void scene::Crowd::setPlayerSpeed(const glm::vec3 &speed) {
     _speed = _speed * 0.5f + speed;
     _speed = scaleMax(_speed);
     _collidePlayer = true;
+}
+
+void scene::Crowd::inverseSpeed(const unsigned int &otherId) {
+    if (!_collideCrowd[otherId]) {
+        _speed = -_speed;
+        _collideCrowd[otherId] = true;
+    }
 }
 
 void scene::Crowd::doJump() {

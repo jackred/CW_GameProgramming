@@ -26,6 +26,7 @@ namespace scene {
         void update(const MazeDisplay &maze, const glm::vec3 &player, const std::vector<Crowd *> &crowds);
 
         void setPlayerSpeed(const glm::vec3 &speed);
+        void inverseSpeed(const unsigned int &otherId);
 
         void doJump();
 
@@ -48,6 +49,7 @@ namespace scene {
         glm::vec3 _speed;
         const float _maxSpeed = 2.0f;
         bool _collidePlayer = false;
+        std::vector<bool> _collideCrowd;
 
         double _lastTime = glfwGetTime();
     };
