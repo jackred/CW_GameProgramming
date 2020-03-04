@@ -11,12 +11,12 @@
 
 namespace scene {
 
-  class Ball : public AObject {
-  public:
-    explicit Ball();
+    class Ball : public AObject {
+    public:
+        explicit Ball();
 
-    void setPosition(glm::vec3 position) override;
-  };
+        void setPosition(glm::vec3 position) override;
+    };
 }
 
 #endif /* !BALL_HPP */

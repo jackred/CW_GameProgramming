@@ -7,6 +7,7 @@
 scene::MazeDisplay::MazeDisplay() : _floor(WIDTH * HEIGHT), _maze(WIDTH, HEIGHT) {}
 
 void scene::MazeDisplay::init() {
+    _maze.init();
     backstage::walls_t _test = _maze.getWalls();
     const glm::vec2 size(_maze.getWidth(), _maze.getLength());
 
@@ -53,6 +54,7 @@ bool scene::MazeDisplay::update(const glm::vec3 playerPosition) {
 void scene::MazeDisplay::clear() {
     for (const auto &it : _walls)
         delete it;
+    _walls.clear();
 }
 
 void scene::MazeDisplay::initFloor(const glm::vec2 &size) {

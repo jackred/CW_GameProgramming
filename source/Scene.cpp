@@ -15,30 +15,15 @@ scene::Scene::~Scene() {
     for (auto &it : _models)
         delete it.second;
 }
-/*
-std::ostream &operator<<(std::ostream &stream, const glm::vec3 &vec) {
-    stream << vec.x << " " << vec.y << " " << vec.z;
-    return stream;
-}*/
 
 void scene::Scene::init() {
     std::string vsModelPath = "../shader/model_vs.glsl";
     std::string fsModelPath = "../shader/model_fs.glsl";
-    std::string vsLightPath = "../shader/light_vs.glsl";
-    std::string fsLightPath = "../shader/light_fs.glsl";
-    std::string vsTexturePath = "../shader/texture_vs.glsl";
-    std::string fsTexturePath = "../shader/texture_fs.glsl";
     std::string vsParticlesPath = "../shader/instance_vs.glsl";
     std::string fsParticlesPath = "../shader/instance_fs.glsl";
 
     _shaders.push_back(std::make_unique<gl_wrapper::Shader>(
             gl_wrapper::Shader(vsModelPath, fsModelPath, gl_wrapper::ShaderType::MODEL)
-    ));
-    _shaders.push_back(std::make_unique<gl_wrapper::Shader>(
-            gl_wrapper::Shader(vsLightPath, fsLightPath, gl_wrapper::ShaderType::LIGHT)
-    ));
-    _shaders.push_back(std::make_unique<gl_wrapper::Shader>(
-            gl_wrapper::Shader(vsTexturePath, fsTexturePath, gl_wrapper::ShaderType::TEXTURE_DIFFUSE)
     ));
     _shaders.push_back(std::make_unique<gl_wrapper::Shader>(
             gl_wrapper::Shader(vsParticlesPath, fsParticlesPath, gl_wrapper::ShaderType::INSTANCE)
@@ -131,6 +116,15 @@ void scene::Scene::checkKey() {
     if (_keyCode[GLFW_KEY_SPACE])
         for (auto &crowd : _crowd)
             crowd->doJump();
+    if (_keyCode[GLFW_KEY_RIGHT_SHIFT])
+        for (auto &crowd : _crowd)
+            crowd->toggleBoids();
+    if (_keyCode[GLFW_KEY_ENTER]) {
+        _maze.clear();
+        _maze.init();
+        _player.reset(_maze);
+        reset();
+    }
     if (_keyCode[GLFW_KEY_ESCAPE])
         getWindow().setClose(true);
     if (_keyCode[GLFW_KEY_X] && _pressed) {

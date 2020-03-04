@@ -16,39 +16,39 @@
 
 namespace scene {
 
-  class AObject {
-  public:
-    explicit AObject(ModelType type);
-    AObject(ModelType type, unsigned int id);
-    AObject(const AObject& other);
-    virtual ~AObject() = default;
+    class AObject {
+    public:
+        explicit AObject(ModelType type);
+        AObject(ModelType type, unsigned int id);
+        AObject(const AObject& other);
+        virtual ~AObject() = default;
 
-    void draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders);
+        void draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders);
 
-    virtual void setPosition(glm::vec3 position);
-    void setOrientation(glm::vec3 orientation);
-    virtual void setShape(glm::vec3 shape);
-    void setSize(glm::vec3 size);
+        virtual void setPosition(glm::vec3 position);
+        void setOrientation(glm::vec3 orientation);
+        virtual void setShape(glm::vec3 shape);
+        void setSize(glm::vec3 size);
 
-    unsigned int getId() const;
-    ModelType getType() const;
-    const glm::vec3 getPosition() const;
-    const glm::vec3 getSize() const;
+        unsigned int getId() const;
+        ModelType getType() const;
+        const glm::vec3 getPosition() const;
+        const glm::vec3 getSize() const;
 
-  protected:
-    const unsigned int _id;
-    glm::vec3 _position = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 _orientation = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 _offset = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 _shape = glm::vec3(1.0f, 1.0f, 1.0f);
-    glm::vec3 _size = glm::vec3(1.0f, 1.0f, 1.0f);
+    protected:
+        const unsigned int _id;
+        glm::vec3 _position = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::vec3 _orientation = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::vec3 _offset = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::vec3 _shape = glm::vec3(1.0f, 1.0f, 1.0f);
+        glm::vec3 _size = glm::vec3(1.0f, 1.0f, 1.0f);
 
-  private:
-    static unsigned int _idGen;
-    const ModelType _type = scene::ModelType::UNKNOWN;
-  };
+    private:
+        static unsigned int _idGen;
+        const ModelType _type = scene::ModelType::UNKNOWN;
+    };
 
-  typedef std::vector<AObject*> Objects_t;
+    typedef std::vector<AObject*> Objects_t;
 
 }
 
