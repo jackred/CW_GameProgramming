@@ -72,7 +72,7 @@ scene::normal_collision_t scene::Intersect::vectorNormal(const glm::vec3 &aCente
     else if (std::round(result.y) == -1)
         dist.z = c.y - r.y + e.y;
     else
-        std::cerr << "error" << std::endl;
+        throw std::runtime_error("Intersection error");
 
     return std::make_tuple(true, glm::vec3(std::round(result.x), 0.0f, std::round(result.y)), dist);
 }

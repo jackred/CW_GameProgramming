@@ -29,6 +29,7 @@ namespace scene {
         normal_collision_t intersectSphere(glm::vec3 center, float radius) const;
 
         const glm::vec2 getStart() const;
+        const glm::vec2 getEnd() const;
 
     private:
         void initFloor(const glm::vec2 &size);

@@ -63,6 +63,8 @@ void scene::Scene::init() {
     _pointLights[1].setDiffuse(glm::vec3(0.82f, 0.12f, 0.05f));
     for (auto &it : _pointLights)
         it.setShader(_shaders);
+
+    _particles.setPosition(glm::vec3(_maze.getEnd().x, 0.01f, _maze.getEnd().y));
 }
 
 void scene::Scene::onDraw() {
@@ -100,7 +102,7 @@ void scene::Scene::checkKey() {
             (_player.*it.second)();
     if (_keyCode[GLFW_KEY_ESCAPE])
         getWindow().setClose(true);
-    if (_keyCode[GLFW_KEY_SPACE] && _pressed) {
+    if (_keyCode[GLFW_KEY_X] && _pressed) {
         if (_mode == GL_FILL)
             _mode = GL_LINE;
         else

@@ -22,8 +22,20 @@ void scene::Player::draw(const scene::Models_t &models, const gl_wrapper::Shader
 
     //_speed += glm::vec3(0.0f, -9.81f, 0.0f) * (float) delta * 0.5f;
     auto pos = _ball.getPosition();
-    const glm::vec3 newPos = pos + _speed * (float) delta;
-    normal_collision_t collision = maze.intersectSphere(newPos, 0.2f);
+    normal_collision_t collision;
+    glm::vec3 newPos = pos + _speed * (float) delta;
+
+    try {
+        collision = maze.intersectSphere(newPos, 0.2f);
+    } catch (const std::runtime_error &e) {
+        std::cerr << e.what() << std::endl;
+        collision = std::make_tuple(false, glm::vec3(0.0f), glm::vec3(0.0f));
+        _speed = glm::vec3(0.0f);
+        auto &start = maze.getStart();
+        _ball.setPosition(glm::vec3(start.x, 0.5f, start.y));
+        return;
+    }
+
     if (std::get<0>(collision)) {
         const glm::vec3 &normal = std::get<1>(collision);
         const glm::vec3 offset = normal * 0.2f;
@@ -77,7 +89,7 @@ void scene::Player::goLeft() {
 }
 
 void scene::Player::unLockCamera() {
-    static double oldTime = glfwGetTime();
+    static double oldTime = 0;
 
     if (_lastTime - oldTime > 0.5f) {
         oldTime = glfwGetTime();

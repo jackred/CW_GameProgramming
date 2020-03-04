@@ -56,7 +56,7 @@ void scene::MazeDisplay::initFloor(const glm::vec2 &size) {
             i++;
         }
     }
-    const glm::vec3 path_color(0.39f, 0.71f, 0.67f);
+    const glm::vec3 path_color(0.70f, 0.59f, 0.29f);
     while (!path.empty()) {
         glm::vec2 &pos = path.top();
         _floor[pos.x * size.y + pos.y].color = path_color;
@@ -93,4 +93,10 @@ const glm::vec2 scene::MazeDisplay::getStart() const {
     auto start = _maze.getStart();
     const glm::vec2 size(_maze.getWidth(), _maze.getLength());
     return glm::vec2((start.x - size.x / 2.0f) * 2.0f + 1.0f, (start.y - size.y / 2.0f) * 2.0f + 1.0f);
+}
+
+const glm::vec2 scene::MazeDisplay::getEnd() const {
+    auto end = _maze.getEnd();
+    const glm::vec2 size(_maze.getWidth(), _maze.getLength());
+    return glm::vec2((end.x - size.x / 2.0f) * 2.0f + 1.0f, (end.y - size.y / 2.0f) * 2.0f + 1.0f);
 }

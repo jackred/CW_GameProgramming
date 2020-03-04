@@ -62,10 +62,10 @@ namespace scene {
         Player _player;
 
         const std::unordered_map<int, change_camera_t> _keyMapCamera = {
-                {GLFW_KEY_W, &scene::Camera::moveForward},
-                {GLFW_KEY_S, &scene::Camera::moveBackward},
-                {GLFW_KEY_R, &scene::Camera::moveUp},
-                {GLFW_KEY_F, &scene::Camera::moveDown},
+                {GLFW_KEY_W, &scene::Camera::moveUp},
+                {GLFW_KEY_S, &scene::Camera::moveDown},
+                {GLFW_KEY_R, &scene::Camera::moveForward},
+                {GLFW_KEY_F, &scene::Camera::moveBackward},
                 {GLFW_KEY_A, &scene::Camera::moveLeft},
                 {GLFW_KEY_D, &scene::Camera::moveRight},
                 {GLFW_KEY_Q, &scene::Camera::rotateLeft},
@@ -76,7 +76,7 @@ namespace scene {
                 {GLFW_KEY_LEFT, &scene::Player::goLeft},
                 {GLFW_KEY_RIGHT, &scene::Player::goRight},
                 {GLFW_KEY_DOWN, &scene::Player::goDown},
-                {GLFW_KEY_CAPS_LOCK, &scene::Player::unLockCamera}
+                {GLFW_KEY_LEFT_SHIFT, &scene::Player::unLockCamera}
         };
     };
 }

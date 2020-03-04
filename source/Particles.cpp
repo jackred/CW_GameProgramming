@@ -12,23 +12,27 @@ void scene::Particles::draw(const gl_wrapper::Shader_ptr_t &shader, const MazeDi
     _instances.draw(shader);
 }
 
+void scene::Particles::setPosition(const glm::vec3 pos) {
+    _position = pos;
+}
+
 void scene::Particles::refreshParticles(const MazeDisplay &maze) {
     double currentTime = glfwGetTime();
     double delta = currentTime - _lastTime;
     _lastTime = currentTime;
 
-    int nbParticles = (int) (delta * MAX_PARTICLES / 5);
-    if (nbParticles > (int) (0.016f * MAX_PARTICLES / 5))
-        nbParticles = (int) (0.016f * MAX_PARTICLES / 5);
+    int nbParticles = (int) (delta * 800);
+    if (nbParticles > (int) (0.016f * 800))
+        nbParticles = (int) (0.016f * 800);
 
     for (int i = 0; i < nbParticles; i++) {
         int index = this->findUnusedParticle();
         _particlesContainer[index].life = 5.0f;
-        _particlesContainer[index].pos = glm::vec3(0.0f, 1.0f, 0.0f);
+        _particlesContainer[index].pos = _position;
 
         float spread = 1.5f;
-        glm::vec3 maindir = glm::vec3(0.0f, 8.0f, 0.0f);
-        double R = 1.0f;
+        glm::vec3 maindir = glm::vec3(0.0f, 6.0f, 0.0f);
+        double R = 0.8f;
 
         double phi = (rand() % (int) (2 * M_PI * 1000)) / 1000.0f;
         double costheta = (rand() % 2000 - 1000) / 1000.0f;
