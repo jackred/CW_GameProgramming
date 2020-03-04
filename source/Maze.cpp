@@ -247,6 +247,10 @@ void backstage::Maze::newPath(glm::vec2 start, size_t minDist) {
   } while (_aStar.empty());
 }
 
+void backstage::Maze::resetPathFromEnd(size_t minDist) {
+  newPath(_end, minDist);
+}
+
 void backstage::Maze::setStart(glm::vec2 start) {
   _start = start;
   aStar();
