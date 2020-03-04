@@ -15,6 +15,7 @@ backstage::Maze::Maze(size_t width, size_t length, size_t minDist) {
   init(minDist);  
 }
 
+// regenerate a maze
 void backstage::Maze::init(size_t minDist) {
   do {
     _maze = generateEmptyMaze();
@@ -28,7 +29,7 @@ void backstage::Maze::init(size_t minDist) {
   } while(_aStar.empty());
 }
 
-
+// create empty maze
 backstage::maze_t backstage::Maze::generateEmptyMaze() {
   maze_t newMaze;
   for (size_t i=0 ; i<_width ; i++) {
@@ -41,6 +42,7 @@ backstage::maze_t backstage::Maze::generateEmptyMaze() {
   return newMaze;
 }
 
+// create a random 0/1 maze
 void backstage::Maze::generateSeed() {
   for (size_t i=0 ; i<_width ; i++) {
     for (size_t j=0 ; j<_length ; j++) {
@@ -49,6 +51,7 @@ void backstage::Maze::generateSeed() {
   }
 }
 
+// count the number of neighbor being cell around a particular cell
 unsigned int backstage::Maze::countNeighbors(backstage::maze_t maze, size_t x, size_t y) {
   unsigned int sum=0;
   size_t minx = (x == 0) ? 0 : x-1;
@@ -63,11 +66,16 @@ unsigned int backstage::Maze::countNeighbors(backstage::maze_t maze, size_t x, s
   return sum;
 }
 
+// apply rule rule B3_1234 on a cell at time t
+// if there is 3 neighbor, the cell become a wall
+// if there is 1,2,3 or 4 neighbor, the cell stay alive
+// the cell is dead (empty) if not
 unsigned int backstage::Maze::ruleB3_1234Cell(backstage::maze_t maze, size_t x, size_t y) {
   unsigned int nbNeighbors = countNeighbors(maze, x, y);
   return (((maze[x][y] == 1) && ((nbNeighbors >= 1) && (nbNeighbors <= 4)))|| nbNeighbors == 3);
 }
 
+// apply rule B3_1234 on all cel at time t
 void backstage::Maze::ruleB3_1234Iteration() {
   backstage::maze_t newMaze = generateEmptyMaze();
   for (size_t i=0 ; i<_width ; i++) {
@@ -78,6 +86,7 @@ void backstage::Maze::ruleB3_1234Iteration() {
   _maze = newMaze;
 }
 
+// apply an Iteration of the rule B3_1234 20 times to generate a maze
 void backstage::Maze::generateCorridor() {
   for (int i = 0 ; i < 20 ; i++) {
     // std::cout << *this << std::endl;
@@ -85,6 +94,7 @@ void backstage::Maze::generateCorridor() {
   }
 }
 
+// erase some corridor randomly to make more path
 void backstage::Maze::eraseCorridor() {
   for (size_t i=0 ; i<_width ; i++) {
     for (size_t j=0 ; j<_length ; j++) {
@@ -96,6 +106,7 @@ void backstage::Maze::eraseCorridor() {
   }
 }
 
+// add a border
 void backstage::Maze::makeBorder() {
   for (size_t i=0 ; i<_width ; i++) {
     for (size_t j=0 ; j<_length ; j++) {
@@ -106,6 +117,7 @@ void backstage::Maze::makeBorder() {
   }
 }
 
+// does this cell has neightbor horizontally?
 bool backstage::Maze::hasNeighbor(maze_t maze, size_t x, size_t y) {
   bool res = false;
   if (y != 0) {
@@ -117,6 +129,7 @@ bool backstage::Maze::hasNeighbor(maze_t maze, size_t x, size_t y) {
   return res;
 }
 
+// append the vector of wall horizontal of size > 1
 void backstage::Maze::toWallsHorizontal() {
   size_t i = 0;
   size_t j = 0;
@@ -146,6 +159,7 @@ void backstage::Maze::toWallsHorizontal() {
   }
 }
 
+// append all the wall of size vertical >1 without horizontal neighbor
 void backstage::Maze::toWallsVertical() {
   size_t i = 0;
   size_t j = 0;
@@ -173,6 +187,7 @@ void backstage::Maze::toWallsVertical() {
   }
 }
 
+// generate the vectors of walls, to optimize wall drawing
 void backstage::Maze::toWalls() {
   _walls.clear();
   toWallsHorizontal();
@@ -180,7 +195,7 @@ void backstage::Maze::toWalls() {
 }
 
 /* overloaded */
-
+// overload maze operator to have debug
 std::ostream& backstage::operator<<(std::ostream &os, const backstage::Maze &maze) {
   backstage::maze_t arr = maze.getMaze();
   // os << "\033c";
@@ -207,7 +222,6 @@ std::ostream& backstage::operator<<(std::ostream &os, const backstage::Maze &maz
 }
 
 /* getters */
-
 backstage::walls_t backstage::Maze::getWalls() const {
   return _walls;
 }
@@ -239,6 +253,7 @@ std::stack<glm::vec2> backstage::Maze::getAStar() const {
 
 
 /* path */
+// create a new start-end path with a reachable end. Start is given in argument
 void backstage::Maze::newPath(glm::vec2 start, size_t minDist) {
   _start = start;
   do {
@@ -246,15 +261,18 @@ void backstage::Maze::newPath(glm::vec2 start, size_t minDist) {
   } while (_aStar.empty());
 }
 
+// create a new start-end path with a reachable end. Start is the old path end
 void backstage::Maze::resetPathFromEnd(size_t minDist) {
   newPath(_end, minDist);
 }
 
+// set the start of the maze and redo A*
 void backstage::Maze::setStart(glm::vec2 start) {
   _start = start;
   aStar();
 }
 
+// assign a random start, which is not a wall
 void backstage::Maze::assignStart() {
   size_t x;
   size_t y;
@@ -266,6 +284,8 @@ void backstage::Maze::assignStart() {
 }
 
 
+// assign a random end, not a wall.
+// Manhattan distance between end and start must me < minDist
 void backstage::Maze::assignEnd(size_t minDist) {
   size_t x;
   size_t y;
@@ -276,6 +296,8 @@ void backstage::Maze::assignEnd(size_t minDist) {
   _end = glm::vec2(x, y);
 }
 
+// assign an end until it's reachable or we are over 200 iterations
+// if there's more than 200 iterations, the other functions will regenerate the maze
 void backstage::Maze::assignEndUntilPath(size_t minDist) {
   int i = 0;
   do {
@@ -285,12 +307,13 @@ void backstage::Maze::assignEndUntilPath(size_t minDist) {
   } while(_aStar.empty() && (i < 200));
 }
 
-/* aStar */
 
+/* aStar */
 size_t backstage::Maze::manhattanDistance(glm::vec2 x, glm::vec2 y) {
   return abs(x[0] - y[0]) + abs(x[1] - y[1]);
 }
 
+// insert the next cell to visit in the list, at a sorted position
 void backstage::Maze::insertInPosition(glm::vec2 toInsert, size_t heuristicDist, std::list<glm::vec2> &toVisit, std::map<size_t, std::tuple<glm::vec2, size_t, size_t>> mapPoint) {
   std::list<glm::vec2>::iterator it=toVisit.begin();
   while ((it != toVisit.end()) && (std::get<1>(mapPoint[_length * (*it)[0] + (*it)[1]]) + std::get<2>(mapPoint[_length*(*it)[0] + (*it)[1]]) < heuristicDist)) {
@@ -299,6 +322,9 @@ void backstage::Maze::insertInPosition(glm::vec2 toInsert, size_t heuristicDist,
   toVisit.insert(it, toInsert);
 }
 
+// expand a cell
+// if it was not visited, add it to the visit list
+// if it was visited, update the distance from the start if it's better
 void backstage::Maze::expand(glm::vec2 toExpand, size_t x, size_t y, std::list<glm::vec2> &toVisit, std::map<size_t, std::tuple<glm::vec2, size_t, size_t>> &mapPoint, std::set<glm::vec2> visited) {
   if ((x > 0) && (x < _maze.size()) && (y > 0) && (y < _maze.size()) && (_maze[x][y] == 0)) { // if in maze and a cell
     glm::vec2 tmp = glm::vec2(x, y);
@@ -314,6 +340,7 @@ void backstage::Maze::expand(glm::vec2 toExpand, size_t x, size_t y, std::list<g
   }
 }
 
+// expand all cell around the visited cell
 void backstage::Maze::expandAll(glm::vec2 toExpand, std::list<glm::vec2> &toVisit, std::map<size_t, std::tuple<glm::vec2, size_t, size_t>> &mapPoint, std::set<glm::vec2> visited) {
   expand(toExpand, toExpand[0], toExpand[1]+1, toVisit, mapPoint, visited); // south
   expand(toExpand, toExpand[0], toExpand[1]-1, toVisit, mapPoint, visited); // north
@@ -322,6 +349,8 @@ void backstage::Maze::expandAll(glm::vec2 toExpand, std::list<glm::vec2> &toVisi
 }
 
 
+// recursively rebuild the path of A* from the end, and stack it
+// also add it in a set for debug (terminal print)
 std::stack<glm::vec2> backstage::Maze::rebuildPath(std::map<size_t, std::tuple<glm::vec2, size_t, size_t>> mapPoint, std::stack<glm::vec2> acc, std::set<glm::vec2> acc2) {
   glm::vec2 tmp = std::get<0>(mapPoint[_length * acc.top()[0] + acc.top()[1]]);
   if (tmp == acc.top()) {
@@ -334,6 +363,10 @@ std::stack<glm::vec2> backstage::Maze::rebuildPath(std::map<size_t, std::tuple<g
   }
 }
 
+// a star
+// visited: set of visited cell
+// toVisit: sorted list of cell to Visit
+// mapPoint: map of cell, the cell we come from to arrive at this cell, the heuristic and the disctance from the start
 void backstage::Maze::aStar() {
   std::set<glm::vec2> visited;
   std::list<glm::vec2> toVisit;
