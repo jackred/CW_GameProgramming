@@ -7,8 +7,13 @@
 scene::Particles::Particles() : _instances(MAX_PARTICLES) {}
 
 void scene::Particles::draw(const gl_wrapper::Shader_ptr_t &shader, const MazeDisplay &maze) {
+    double currentTime = glfwGetTime();
+    double delta = currentTime - _lastTime;
+    _lastTime = currentTime;
+
     if (_activated) {
-        this->refreshParticles(maze);
+        this->refreshParticles(delta);
+        this->updateModel(maze, delta);
 
         _instances.draw(shader);
     }
@@ -20,16 +25,12 @@ void scene::Particles::reset(const MazeDisplay &maze) {
     _position = glm::vec3(maze.getEnd().x, 0.01f, maze.getEnd().y);
 }
 
-void scene::Particles::refreshParticles(const MazeDisplay &maze) {
-    double currentTime = glfwGetTime();
-    double delta = currentTime - _lastTime;
-    _lastTime = currentTime;
+void scene::Particles::refreshParticles(double &delta) {
+    int nb_particles = (int) (delta * 800);
+    if (nb_particles > (int) (0.016f * 800))
+        nb_particles = (int) (0.016f * 800);
 
-    int nbParticles = (int) (delta * 800);
-    if (nbParticles > (int) (0.016f * 800))
-        nbParticles = (int) (0.016f * 800);
-
-    for (int i = 0; i < nbParticles; i++) {
+    for (int i = 0; i < nb_particles; i++) {
         int index = this->findUnusedParticle();
         _particlesContainer[index].life = 5.0f;
         _particlesContainer[index].pos = _position;
@@ -58,17 +59,14 @@ void scene::Particles::refreshParticles(const MazeDisplay &maze) {
 
         _particlesContainer[index].size = (rand() % 1000) / 2000.0f + 0.1f;
     }
+}
 
+void scene::Particles::updateModel(const MazeDisplay &maze, double &delta) {
     unsigned int actual_amount = 0;
-    for (int i = 0; i < MAX_PARTICLES; i++) {
-
-        Particle &p = _particlesContainer[i];
-
+    for (auto &p : _particlesContainer) {
         if (p.life > 0.0f) {
-
             p.life -= (float) delta;
             if (p.life > 0.0f){
-
                 p.speed += glm::vec3(0.0f, -9.81f, 0.0f) * (float) delta * 0.5f;
                 if (!maze.intersectSquare(p.pos + p.speed * (float) delta, 0.1f * p.size))
                     p.pos += p.speed * (float) delta;
@@ -79,7 +77,6 @@ void scene::Particles::refreshParticles(const MazeDisplay &maze) {
 
                 _instances[actual_amount].color = p.rgb;
                 _instances[actual_amount].matrix = translate * rotate * scale;
-
             }
             actual_amount++;
         }

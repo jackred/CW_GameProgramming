@@ -37,7 +37,8 @@ namespace scene {
         void toggleActivation();
 
     private:
-        void refreshParticles(const MazeDisplay &maze);
+        void refreshParticles(double &delta);
+        void updateModel(const MazeDisplay &maze, double &delta);
         int findUnusedParticle();
 
     private:
