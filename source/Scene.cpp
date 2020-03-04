@@ -10,7 +10,7 @@ scene::Scene::Scene() : App(1920, 1080, "Scene"), _player(_maze) {
 
 scene::Scene::~Scene() {
     _maze.clear();
-    for (auto &it : _objects)
+    for (auto &it : _crowd)
         delete it;
     for (auto &it : _models)
         delete it.second;
@@ -50,8 +50,9 @@ void scene::Scene::init() {
     _models.emplace(ModelType::BALL, new Model(path));
 
     _maze.init();
-    // _objects.push_back(new Ball());
-    // _objects.back()->setPosition(glm::vec3(0.0f, 1.5f, 0.0));
+
+    for (int i = 0; i < 7; i++)
+        _crowd.emplace_back(new Crowd());
 
     _dirLight.setAmbient(glm::vec3(0.5f, 0.5f, 0.5f));
     _dirLight.setShader(_shaders);
@@ -65,6 +66,8 @@ void scene::Scene::init() {
         it.setShader(_shaders);
 
     _particles.reset(_maze);
+    for (auto &crowd : _crowd)
+        crowd->reset(_maze);
 }
 
 void scene::Scene::onDraw() {
@@ -76,7 +79,9 @@ void scene::Scene::onDraw() {
     static bool end = false;
     static double lastTimeEnd = glfwGetTime();
 
-    _player.update(_camera, _maze);
+    _player.update(_camera, _maze, _crowd);
+    for (auto &crowd : _crowd)
+        crowd->update(_maze, _player.getPosition(), _crowd);
     if (!end) {
         if (_maze.update(_player.getPosition())) {
             _particles.toggleActivation();
@@ -103,14 +108,13 @@ void scene::Scene::onDraw() {
 
     _maze.draw(_models, _shaders);
     _player.draw(_models, _shaders);
-    for (auto &object : _objects)
-        object->draw(_models, _shaders);
+    for (auto &crowd : _crowd)
+        crowd->draw(_models, _shaders);
 }
 
 void scene::Scene::reset() {
     _maze.reset();
     _particles.reset(_maze);
-    _player.reset(_maze);
 }
 
 void scene::Scene::checkKey() {
@@ -121,6 +125,9 @@ void scene::Scene::checkKey() {
     for (const auto &it : _keyMapPlayer)
         if (_keyCode[it.first] && _pressed)
             (_player.*it.second)();
+    if (_keyCode[GLFW_KEY_SPACE])
+        for (auto &crowd : _crowd)
+            crowd->doJump();
     if (_keyCode[GLFW_KEY_ESCAPE])
         getWindow().setClose(true);
     if (_keyCode[GLFW_KEY_X] && _pressed) {

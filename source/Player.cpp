@@ -8,11 +8,6 @@ scene::Player::Player(const MazeDisplay &maze) {
     reset(maze);
 }
 
-std::ostream &operator<<(std::ostream &stream, const glm::vec3 &vec) {
-    stream << vec.x << " " << vec.y << " " << vec.z;
-    return stream;
-}
-
 void scene::Player::draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders) {
     _ball.draw(models, shaders);
 }
@@ -20,45 +15,69 @@ void scene::Player::draw(const scene::Models_t &models, const gl_wrapper::Shader
 void scene::Player::reset(const MazeDisplay &maze) {
     auto &start = maze.getStart();
     _speed = glm::vec3(0.0f);
-    _ball.setPosition(glm::vec3(start.x, 1.5f, start.y));
+    _ball.setPosition(glm::vec3(start.x, 1.0f, start.y));
 }
 
-void scene::Player::update(scene::Camera_ptr_t &camera, const scene::MazeDisplay &maze) {
+void scene::Player::update(scene::Camera_ptr_t &camera, const scene::MazeDisplay &maze, std::vector<Crowd *> &crowd) {
     double currentTime = glfwGetTime();
     double delta = currentTime - _lastTime;
     _lastTime = currentTime;
 
     // Apply gravity
     _speed += glm::vec3(0.0f, -9.81f, 0.0f) * (float) delta * 0.5f;
+
+    collideWithFloor(maze, delta);
+    collideWithWalls(maze, delta);
+
+    _speed = scaleMax(_speed);
+    collideWithCrowd(crowd, delta);
+
     auto pos = _ball.getPosition();
-    glm::vec3 newPos = pos + _speed * (float) delta;
-    normal_collision_t collisions[2];
-
-    try {
-        collisions[0] = maze.intersectSphereWalls(newPos, 0.2f);
-    } catch (const std::runtime_error &e) {
-        std::cerr << e.what() << std::endl;
-        reset(maze);
-        return;
-    }
-    collisions[1] = maze.intersectSphereFloor(newPos, 0.2f);
-
-    bool isCollide = false;
-    for (auto &collision : collisions) {
-        if (std::get<0>(collision)) {
-            pos += doCollision(collision, pos, newPos) * (float) delta;
-            isCollide = true;
-        }
-    }
-    if (!isCollide)
-        pos = newPos;
-    _ball.setPosition(pos);
-
     if (_lock) {
         const glm::vec3 dir(0.0f, -12.0f, -6.0f);
         camera->setCameraPosition(pos - dir);
         camera->setCameraFront(dir);
     }
+}
+
+void scene::Player::collideWithCrowd(std::vector<Crowd *> &crowd, double &delta) {
+    for (auto &ball : crowd) {
+        glm::vec3 newPos = _ball.getPosition() + _speed * (float) delta;
+        if (Intersect::spheres(newPos, 0.2f, ball->getPosition(), 0.1f))
+            ball->setPlayerSpeed(_speed);
+    }
+}
+
+void scene::Player::collideWithWalls(const MazeDisplay &maze, double &delta) {
+    normal_collision_t collision;
+    auto pos = _ball.getPosition();
+    glm::vec3 newPos = pos + _speed * (float) delta;
+
+    try {
+        collision = maze.intersectSphereWalls(newPos, 0.2f);
+    } catch (const std::runtime_error &e) {
+        std::cerr << e.what() << std::endl;
+        reset(maze);
+        return;
+    }
+    if (std::get<0>(collision)) {
+        pos += doCollision(collision, pos, newPos) * (float) delta;
+    } else
+        pos = newPos;
+    _ball.setPosition(pos);
+}
+
+
+void scene::Player::collideWithFloor(const MazeDisplay &maze, double &delta) {
+    auto pos = _ball.getPosition();
+    glm::vec3 newPos = pos + _speed * (float) delta;
+
+    normal_collision_t collision = maze.intersectSphereFloor(newPos, 0.2f);
+    if (std::get<0>(collision)) {
+        pos += doCollision(collision, pos, newPos) * (float) delta;
+    } else
+        pos = newPos;
+    _ball.setPosition(pos);
 }
 
 glm::vec3 scene::Player::doCollision(normal_collision_t &collision, glm::vec3 &pos, glm::vec3 &newPos) {
@@ -82,6 +101,15 @@ glm::vec3 scene::Player::doCollision(normal_collision_t &collision, glm::vec3 &p
 
         return _speed * (1 - ratio) + oldSpeed * ratio;
     }
+}
+
+glm::vec3 &scene::Player::scaleMax(glm::vec3 &velocity) {
+    auto max = std::max(velocity.x, std::max(velocity.y, velocity.z));
+    if (max > _maxSpeed) {
+        float ratio = _maxSpeed / max;
+        velocity *= ratio;
+    }
+    return velocity;
 }
 
 void scene::Player::goUp() {
@@ -111,8 +139,9 @@ void scene::Player::goLeft() {
 }
 
 void scene::Player::doJump() {
-    if (_speed.y < 0.1f)
-        _speed += glm::vec3(0.0f, 2.5f, 0.0f);
+    auto pos = _ball.getPosition();
+    if (pos.y < 0.3f && _speed.y < 1.0f)
+        _speed += glm::vec3(0.0f, 1.8f, 0.0f);
 }
 
 void scene::Player::unLockCamera() {

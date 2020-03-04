@@ -36,6 +36,10 @@ void scene::AObject::setShape(glm::vec3 shape) {
     _offset = (_size * _shape) / glm::vec3(2);
 }
 
+void scene::AObject::setSize(glm::vec3 size) {
+    _size = size;
+}
+
 unsigned int scene::AObject::getId() const {
     return _id;
 }

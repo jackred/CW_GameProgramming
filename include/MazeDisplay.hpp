@@ -18,6 +18,10 @@
 namespace scene {
 
     class MazeDisplay {
+
+        const unsigned int WIDTH = 20;
+        const unsigned int HEIGHT = 20;
+
     public:
         MazeDisplay();
 

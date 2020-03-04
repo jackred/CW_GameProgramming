@@ -28,6 +28,7 @@ namespace scene {
         virtual void setPosition(glm::vec3 position);
         void setOrientation(glm::vec3 orientation);
         virtual void setShape(glm::vec3 shape);
+        void setSize(glm::vec3 size);
 
         unsigned int getId() const;
         ModelType getType() const;

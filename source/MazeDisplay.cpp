@@ -4,7 +4,7 @@
 
 #include <MazeDisplay.hpp>
 
-scene::MazeDisplay::MazeDisplay() : _floor(1000) {}
+scene::MazeDisplay::MazeDisplay() : _floor(WIDTH * HEIGHT), _maze(WIDTH, HEIGHT) {}
 
 void scene::MazeDisplay::init() {
     backstage::walls_t _test = _maze.getWalls();

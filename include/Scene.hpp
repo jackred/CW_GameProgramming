@@ -19,6 +19,7 @@
 #include "AObject.hpp"
 #include "Ball.hpp"
 #include "Camera.hpp"
+#include "Crowd.hpp"
 #include "MazeDisplay.hpp"
 #include "DirLight.hpp"
 #include "Mesh.hpp"
@@ -53,7 +54,7 @@ namespace scene {
     private:
         GLenum _mode = GL_FILL;
         scene::Models_t _models;
-        scene::Objects_t _objects;
+        std::vector<Crowd *> _crowd;
         gl_wrapper::Shaders_t _shaders;
         Particles _particles;
         MazeDisplay _maze;

@@ -40,6 +40,7 @@ set(SOURCE_FILES
   source/App.cpp
   source/Ball.cpp
   source/Camera.cpp
+  source/Crowd.cpp
   source/DirLight.cpp
   source/GLMComparison.cpp
   source/Instance.cpp
