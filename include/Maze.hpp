@@ -48,8 +48,10 @@ namespace backstage {
     void toWallsHorizontal();
     void toWallsVertical();
     void toWalls();
+    void newPath(glm::vec2 start, size_t minDist);
     void assignStart();
     void assignEnd(size_t minDist=10);
+    void assignEndUntilPath(size_t minDist=10);
     size_t manhattanDistance(glm::vec2 x, glm::vec2 y);
     void insertInPosition(glm::vec2 toInsert, size_t heuristicDist, std::list<glm::vec2> &toVisit, std::map<size_t, std::tuple<glm::vec2, size_t, size_t>> mapPoint);
     void expand(glm::vec2 toExpand, size_t x, size_t y, std::list<glm::vec2> &toVisit, std::map<size_t, std::tuple<glm::vec2, size_t, size_t>> &mapPoint, std::set<glm::vec2> visited);

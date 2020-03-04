@@ -24,14 +24,11 @@ void backstage::Maze::init(size_t minDist) {
     makeBorder();
     assignStart();
     toWalls();
-    int i = 0;
-    do {
-      assignEnd();
-      aStar();
-      i++;
-    } while(_aStar.empty() && (i < 200));
+    assignEndUntilPath(minDist);
   } while(_aStar.empty());
 }
+
+
 
 backstage::maze_t backstage::Maze::generateEmptyMaze() {
   maze_t newMaze;
@@ -243,8 +240,16 @@ std::stack<glm::vec2> backstage::Maze::getAStar() const {
 
 
 /* path */
+void backstage::Maze::newPath(glm::vec2 start, size_t minDist) {
+  _start = start;
+  do {
+    assignEndUntilPath(minDist);
+  } while (_aStar.empty());
+}
+
 void backstage::Maze::setStart(glm::vec2 start) {
   _start = start;
+  aStar();
 }
 
 void backstage::Maze::assignStart() {
@@ -266,6 +271,15 @@ void backstage::Maze::assignEnd(size_t minDist) {
     y = rand() % _length;
   } while((_maze[x][y] == 1) || (manhattanDistance(_start, glm::vec2(x, y)) <= minDist));
   _end = glm::vec2(x, y);
+}
+
+void backstage::Maze::assignEndUntilPath(size_t minDist) {
+  int i = 0;
+  do {
+    assignEnd(minDist);
+    aStar();
+    i++;
+  } while(_aStar.empty() && (i < 200));
 }
 
 /* aStar */
