@@ -18,12 +18,21 @@ const glm::vec3 &scene::Camera::getCameraPosition() const {
 }
 
 glm::mat4 scene::Camera::getViewMatrix() const {
-    // std::cout << _cameraFront.x <<" " << _cameraFront.y << " " << _cameraFront.z << std::endl;
     return glm::lookAt(_cameraPos, _cameraPos + _cameraFront, _cameraUp);
 }
 
 glm::mat4 scene::Camera::getProjectionMatrix(gl_wrapper::Window &window) const {
     return glm::perspective(glm::radians(_fov), window.getRatio(), 0.1f, 1000.0f);
+}
+
+void scene::Camera::setCameraPosition(const glm::vec3 cameraPos) {
+    _cameraPos = cameraPos;
+    updateCamerasVectors();
+}
+
+void scene::Camera::setCameraFront(const glm::vec3 cameraFront) {
+    _cameraFront = cameraFront;
+    updateCamerasVectors();
 }
 
 void scene::Camera::zoom(double yOffset) {

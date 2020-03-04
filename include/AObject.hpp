@@ -24,7 +24,6 @@ namespace scene {
 		virtual ~AObject() = default;
 
 		void draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders);
-        void checkDepth(const scene::Models_t &models, const gl_wrapper::Shader_ptr_t &depth);
 
         virtual void setPosition(glm::vec3 position);
         void setOrientation(glm::vec3 orientation);
@@ -32,7 +31,8 @@ namespace scene {
 
         unsigned int getId() const;
         ModelType getType() const;
-        glm::vec3 getPosition() const;
+        const glm::vec3 getPosition() const;
+        const glm::vec3 getSize() const;
 
     protected:
         const unsigned int _id;

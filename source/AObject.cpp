@@ -44,6 +44,10 @@ scene::ModelType scene::AObject::getType() const {
     return _type;
 }
 
-glm::vec3 scene::AObject::getPosition() const {
-    return _position;
+const glm::vec3 scene::AObject::getPosition() const {
+    return _position - _offset;
+}
+
+const glm::vec3 scene::AObject::getSize() const {
+    return _size * _shape;
 }

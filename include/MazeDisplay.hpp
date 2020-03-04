@@ -11,6 +11,7 @@
 #include "glm/glm.hpp"
 
 #include "Maze.hpp"
+#include "Intersect.hpp"
 #include "Wall.hpp"
 #include "Instance.hpp"
 
@@ -23,6 +24,11 @@ namespace scene {
         void init();
         void draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders);
         void clear();
+
+        bool intersectSquare(glm::vec3 center, float size) const;
+        normal_collision_t intersectSphere(glm::vec3 center, float radius) const;
+
+        const glm::vec2 getStart() const;
 
     private:
         void initFloor(const glm::vec2 &size);

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <tuple>
 
 #include "glm/glm.hpp"
 
@@ -62,9 +63,6 @@ namespace loader {
 
     typedef std::unordered_map<std::string, loader::Material> Materials_t;
     typedef std::unordered_map<std::string, loader::Textures_t> TexturesMap_t;
-
-    Vertices_t getStandardVertices(int i = 0);
-    Indices_t getStandardIndices(int i = 0);
 }
 
 namespace scene {
@@ -73,6 +71,11 @@ namespace scene {
         CUBE,
         BALL
     };
+
+    typedef std::tuple<bool, glm::vec3, glm::vec3> normal_collision_t;
+
+    bool intersectSquares(const glm::vec3 &aMin, const glm::vec3 &aMax,
+            const glm::vec3 &bMin, const glm::vec3 &bMax);
 }
 
 #endif /* !MISC_HPP */

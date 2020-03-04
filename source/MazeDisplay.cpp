@@ -65,3 +65,32 @@ void scene::MazeDisplay::initFloor(const glm::vec2 &size) {
 
     _floor.updateModel(chunk_nb);
 }
+
+bool scene::MazeDisplay::intersectSquare(glm::vec3 center, float size) const {
+    const glm::vec3 min(center - glm::vec3(size / 2.0f));
+    const glm::vec3 max(center + glm::vec3(size / 2.0f));
+
+    if (min.y < 0.0f)
+        return true;
+    for (auto &wall : _walls)
+        if (Intersect::squares(wall->getMin(), wall->getMax(), min, max))
+            return true;
+    return false;
+}
+
+scene::normal_collision_t scene::MazeDisplay::intersectSphere(glm::vec3 center, float radius) const {
+    const glm::vec3 min(center - glm::vec3(radius / 2.0f));
+
+    if (min.y < 0.0f)
+        return std::make_tuple(true, glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f));
+    for (auto &wall : _walls)
+        if (Intersect::sphereSquare(wall->getMin(), wall->getMax(), center, radius))
+            return Intersect::vectorNormal(wall->getPosition(), wall->getSize(), center);
+    return std::make_tuple(false, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f));
+}
+
+const glm::vec2 scene::MazeDisplay::getStart() const {
+    auto start = _maze.getStart();
+    const glm::vec2 size(_maze.getWidth(), _maze.getLength());
+    return glm::vec2((start.x - size.x / 2.0f) * 2.0f + 1.0f, (start.y - size.y / 2.0f) * 2.0f + 1.0f);
+}

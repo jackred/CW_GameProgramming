@@ -25,6 +25,7 @@
 #include "Model.hpp"
 #include "Misc.hpp"
 #include "Particles.hpp"
+#include "Player.hpp"
 #include "PointLight.hpp"
 #include "Shader.hpp"
 
@@ -33,6 +34,7 @@ namespace scene {
     class Scene : public gl_wrapper::App {
 
         typedef void (scene::Camera::*change_camera_t)();
+        typedef void (scene::Player::*move_player_t)();
 
     public:
         Scene();
@@ -57,7 +59,9 @@ namespace scene {
         std::vector<scene::PointLight> _pointLights;
         scene::DirLight _dirLight = scene::DirLight(glm::vec3(-10.0f, 10.0f, -10.0f), glm::vec3(2.0f, -4.0f, 2.0f));
         Camera_ptr_t _camera = std::make_unique<Camera>(Camera());
-        const std::unordered_map<int, change_camera_t> _keyMap = {
+        Player _player;
+
+        const std::unordered_map<int, change_camera_t> _keyMapCamera = {
                 {GLFW_KEY_W, &scene::Camera::moveForward},
                 {GLFW_KEY_S, &scene::Camera::moveBackward},
                 {GLFW_KEY_R, &scene::Camera::moveUp},
@@ -66,6 +70,13 @@ namespace scene {
                 {GLFW_KEY_D, &scene::Camera::moveRight},
                 {GLFW_KEY_Q, &scene::Camera::rotateLeft},
                 {GLFW_KEY_E, &scene::Camera::rotateRight}
+        };
+        const std::unordered_map<int, move_player_t> _keyMapPlayer = {
+                {GLFW_KEY_UP, &scene::Player::goUp},
+                {GLFW_KEY_LEFT, &scene::Player::goLeft},
+                {GLFW_KEY_RIGHT, &scene::Player::goRight},
+                {GLFW_KEY_DOWN, &scene::Player::goDown},
+                {GLFW_KEY_CAPS_LOCK, &scene::Player::unLockCamera}
         };
     };
 }

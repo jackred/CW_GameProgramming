@@ -17,6 +17,9 @@ namespace scene {
 
         void setPosition(glm::vec3 position) override;
         void setShape(glm::vec3 shape) override;
+
+        const glm::vec3 getMin() const;
+        const glm::vec3 getMax() const;
     };
 }
 

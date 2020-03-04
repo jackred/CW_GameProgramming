@@ -43,15 +43,16 @@ set(SOURCE_FILES
   source/DirLight.cpp
   source/GLMComparison.cpp
   source/Instance.cpp
+  source/Intersect.cpp
   source/Main.cpp
   source/Mesh.cpp
   source/Maze.cpp
   source/MazeDisplay.cpp
-  source/Misc.cpp
   source/Model.cpp
   source/MTLLoader.cpp
   source/OBJLoader.cpp
   source/Particles.cpp
+  source/Player.cpp
   source/PointLight.cpp
   source/Scene.cpp
   source/Shader.cpp

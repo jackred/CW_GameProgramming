@@ -14,6 +14,7 @@
 #include "Lib.hpp"
 #include "Shader.hpp"
 #include "Instance.hpp"
+#include "MazeDisplay.hpp"
 
 namespace scene {
 
@@ -31,10 +32,10 @@ namespace scene {
     public:
         explicit Particles();
 
-        void draw(const gl_wrapper::Shader_ptr_t &shader);
+        void draw(const gl_wrapper::Shader_ptr_t &shader, const MazeDisplay &maze);
 
     private:
-        void refreshParticles();
+        void refreshParticles(const MazeDisplay &maze);
         int findUnusedParticle();
 
     private:

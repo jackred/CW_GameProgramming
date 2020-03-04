@@ -4,7 +4,7 @@
 
 #include "Scene.hpp"
 
-scene::Scene::Scene() : App(1920, 1080, "Scene") {
+scene::Scene::Scene() : App(1920, 1080, "Scene"), _player(_maze) {
     init();
 }
 
@@ -15,6 +15,11 @@ scene::Scene::~Scene() {
     for (auto &it : _models)
         delete it.second;
 }
+/*
+std::ostream &operator<<(std::ostream &stream, const glm::vec3 &vec) {
+    stream << vec.x << " " << vec.y << " " << vec.z;
+    return stream;
+}*/
 
 void scene::Scene::init() {
     std::string vsModelPath = "../shader/model_vs.glsl";
@@ -45,8 +50,8 @@ void scene::Scene::init() {
     _models.emplace(ModelType::BALL, new Model(path));
 
     _maze.init();
-    _objects.push_back(new Ball());
-    _objects.back()->setPosition(glm::vec3(0.0f, 1.5f, 0.0));
+    // _objects.push_back(new Ball());
+    // _objects.back()->setPosition(glm::vec3(0.0f, 1.5f, 0.0));
 
     _dirLight.setAmbient(glm::vec3(0.5f, 0.5f, 0.5f));
     _dirLight.setShader(_shaders);
@@ -75,20 +80,24 @@ void scene::Scene::onDraw() {
             || shader->getType() == gl_wrapper::ShaderType::TEXTURE_DIFFUSE)
             shader->setUniformVector3("viewPos", _camera->getCameraPosition());
         if (shader->getType() == gl_wrapper::ShaderType::INSTANCE)
-            _particles.draw(shader);
+            _particles.draw(shader, _maze);
         gl_wrapper::Shader::unBind();
     }
 
     _maze.draw(_models, _shaders);
+    _player.draw(_models, _shaders, _camera, _maze);
     for (auto &object : _objects)
         object->draw(_models, _shaders);
 }
 
 void scene::Scene::checkKey() {
-    for (const auto &it : _keyMap) {
+    for (const auto &it : _keyMapCamera) {
         if (_keyCode[it.first] && _pressed)
             (_camera.get()->*it.second)();
     }
+    for (const auto &it : _keyMapPlayer)
+        if (_keyCode[it.first] && _pressed)
+            (_player.*it.second)();
     if (_keyCode[GLFW_KEY_ESCAPE])
         getWindow().setClose(true);
     if (_keyCode[GLFW_KEY_SPACE] && _pressed) {

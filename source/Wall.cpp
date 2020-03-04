@@ -18,3 +18,17 @@ void scene::Wall::setShape(glm::vec3 shape) {
     _shape = shape;
     _offset = (_size * _shape) / glm::vec3(2);
 }
+
+const glm::vec3 scene::Wall::getMin() const {
+    glm::vec3 size(_size * _shape);
+    size.y = -size.y;
+
+    return _position - _offset + size / 2.0f;
+}
+
+const glm::vec3 scene::Wall::getMax() const {
+    glm::vec3 size(_size * _shape);
+    size.y = -size.y;
+
+    return _position - _offset - size / 2.0f;
+}

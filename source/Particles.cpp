@@ -6,13 +6,13 @@
 
 scene::Particles::Particles() : _instances(MAX_PARTICLES) {}
 
-void scene::Particles::draw(const gl_wrapper::Shader_ptr_t &shader) {
-    this->refreshParticles();
+void scene::Particles::draw(const gl_wrapper::Shader_ptr_t &shader, const MazeDisplay &maze) {
+    this->refreshParticles(maze);
 
     _instances.draw(shader);
 }
 
-void scene::Particles::refreshParticles() {
+void scene::Particles::refreshParticles(const MazeDisplay &maze) {
     double currentTime = glfwGetTime();
     double delta = currentTime - _lastTime;
     _lastTime = currentTime;
@@ -62,13 +62,12 @@ void scene::Particles::refreshParticles() {
             if (p.life > 0.0f){
 
                 p.speed += glm::vec3(0.0f, -9.81f, 0.0f) * (float) delta * 0.5f;
-                if (p.pos.y + p.speed.y * (float) delta > (0.1f * p.size) / 2)
+                if (!maze.intersectSquare(p.pos + p.speed * (float) delta, 0.1f * p.size))
                     p.pos += p.speed * (float) delta;
 
                 glm::mat4 translate = glm::translate(glm::mat4(1.0f), p.pos);
                 glm::mat4 rotate = glm::mat4(1.0f);
-                glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
-                scale = glm::scale(scale, glm::vec3(p.size));
+                glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f * p.size));
 
                 _instances[actual_amount].color = p.rgb;
                 _instances[actual_amount].matrix = translate * rotate * scale;

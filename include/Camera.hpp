@@ -25,6 +25,9 @@ namespace scene {
         glm::mat4 getViewMatrix() const;
         glm::mat4 getProjectionMatrix(gl_wrapper::Window &window) const;
 
+        void setCameraPosition(const glm::vec3 cameraPos);
+        void setCameraFront(const glm::vec3 cameraFront);
+
         void zoom(double yOffset);
 
         void moveForward();
