@@ -115,6 +115,9 @@ void scene::Scene::onDraw() {
 void scene::Scene::reset() {
     _maze.reset();
     _particles.reset(_maze);
+    _maze.update(_player.getPosition());
+    for (auto &crowd : _crowd)
+        crowd->reset(_maze);
 }
 
 void scene::Scene::checkKey() {

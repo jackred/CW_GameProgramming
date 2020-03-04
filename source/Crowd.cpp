@@ -42,10 +42,13 @@ void scene::Crowd::update(const scene::MazeDisplay &maze, const glm::vec3 &playe
 
     collideWithFloor(maze, delta);
     collideWithWalls(maze, delta);
-    // collideWithPlayer(player, delta);
-    // collideWithCrowd(crowds, delta);
+    collideWithPlayer(player, delta);
+    collideWithCrowd(crowds, delta);
 
     _speed = scaleMax(_speed);
+    auto pos = _ball.getPosition();
+    if (pos.y < 0.0f)
+        _ball.setPosition(glm::vec3(pos.x, 0.11f, pos.z));
 }
 
 void scene::Crowd::collideWithPlayer(const glm::vec3 &player, double &delta) {

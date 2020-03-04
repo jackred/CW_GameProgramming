@@ -38,6 +38,8 @@ void scene::Player::update(scene::Camera_ptr_t &camera, const scene::MazeDisplay
         camera->setCameraPosition(pos - dir);
         camera->setCameraFront(dir);
     }
+    if (pos.y < 0.0f)
+        _ball.setPosition(glm::vec3(pos.x, 0.21f, pos.z));
 }
 
 void scene::Player::collideWithCrowd(std::vector<Crowd *> &crowd, double &delta) {
