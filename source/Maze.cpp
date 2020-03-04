@@ -36,8 +36,8 @@ backstage::maze_t backstage::Maze::generateEmptyMaze() {
 }
 
 void backstage::Maze::generateSeed() {
-  for (size_t i=(_width/2) - 2 ; i<(_width/2)+2 ; i++) {
-    for (size_t j=(_length/2) - 2 ; j<(_length/2)+2 ; j++) {
+  for (size_t i=0 ; i<_width ; i++) {
+    for (size_t j=0 ; j<_length ; j++) {
       _maze[i][j] = (rand() % 2);
     }
   }
@@ -73,7 +73,7 @@ void backstage::Maze::ruleB3_1234Iteration() {
 }
 
 void backstage::Maze::generateCorridor() {
-  for (int k = 0 ; k < std::max(_width, _length) * 3 ; k ++) {
+  for (int i = 0 ; i < 30 ; i++) {
     // std::cout << *this << std::endl;
     ruleB3_1234Iteration();
   }
