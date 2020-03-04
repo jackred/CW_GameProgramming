@@ -7,13 +7,17 @@
 scene::Particles::Particles() : _instances(MAX_PARTICLES) {}
 
 void scene::Particles::draw(const gl_wrapper::Shader_ptr_t &shader, const MazeDisplay &maze) {
-    this->refreshParticles(maze);
+    if (_activated) {
+        this->refreshParticles(maze);
 
-    _instances.draw(shader);
+        _instances.draw(shader);
+    }
 }
 
-void scene::Particles::setPosition(const glm::vec3 pos) {
-    _position = pos;
+void scene::Particles::reset(const MazeDisplay &maze) {
+    for (auto &particle : _particlesContainer)
+        particle.life = -1.0f;
+    _position = glm::vec3(maze.getEnd().x, 0.01f, maze.getEnd().y);
 }
 
 void scene::Particles::refreshParticles(const MazeDisplay &maze) {
@@ -98,4 +102,8 @@ int scene::Particles::findUnusedParticle() {
         }
     }
     return 0;
+}
+
+void scene::Particles::toggleActivation() {
+    _activated = !_activated;
 }

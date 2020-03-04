@@ -33,7 +33,8 @@ namespace scene {
         explicit Particles();
 
         void draw(const gl_wrapper::Shader_ptr_t &shader, const MazeDisplay &maze);
-        void setPosition(glm::vec3 pos);
+        void reset(const MazeDisplay &maze);
+        void toggleActivation();
 
     private:
         void refreshParticles(const MazeDisplay &maze);
@@ -46,7 +47,8 @@ namespace scene {
         int _lastUsedParticle = 0;
         Particle _particlesContainer[MAX_PARTICLES];
 
-        double _lastTime = 0;
+        double _lastTime = glfwGetTime();
+        bool _activated = false;
     };
 }
 

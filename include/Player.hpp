@@ -21,14 +21,21 @@ namespace scene {
     public:
         Player(const MazeDisplay &maze);
 
-        void draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders,
-                  Camera_ptr_t &camera, const MazeDisplay &maze);
+        void draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders);
+        void reset(const MazeDisplay &maze);
+        void update(Camera_ptr_t &camera, const MazeDisplay &maze);
 
         void goUp();
         void goRight();
         void goDown();
         void goLeft();
+        void doJump();
         void unLockCamera();
+
+        const glm::vec3 getPosition() const;
+
+    private:
+        glm::vec3 doCollision(normal_collision_t &collision, glm::vec3 &pos, glm::vec3 &newPos);
 
     private:
         Ball _ball;
@@ -37,7 +44,7 @@ namespace scene {
         const float _maxSpeed = 2.5f;
         bool _lock = true;
 
-        double _lastTime = 0;
+        double _lastTime = glfwGetTime();
     };
 
 }

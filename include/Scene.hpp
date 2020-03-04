@@ -48,6 +48,7 @@ namespace scene {
 
     private:
         void checkKey() override;
+        void reset();
 
     private:
         GLenum _mode = GL_FILL;
@@ -76,6 +77,7 @@ namespace scene {
                 {GLFW_KEY_LEFT, &scene::Player::goLeft},
                 {GLFW_KEY_RIGHT, &scene::Player::goRight},
                 {GLFW_KEY_DOWN, &scene::Player::goDown},
+                {GLFW_KEY_SPACE, &scene::Player::doJump},
                 {GLFW_KEY_LEFT_SHIFT, &scene::Player::unLockCamera}
         };
     };

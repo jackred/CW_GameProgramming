@@ -64,7 +64,7 @@ void scene::Scene::init() {
     for (auto &it : _pointLights)
         it.setShader(_shaders);
 
-    _particles.setPosition(glm::vec3(_maze.getEnd().x, 0.01f, _maze.getEnd().y));
+    _particles.reset(_maze);
 }
 
 void scene::Scene::onDraw() {
@@ -72,7 +72,22 @@ void scene::Scene::onDraw() {
 
     this->checkKey();
 
-    auto aTime = glfwGetTime();
+    double aTime = glfwGetTime();
+    static bool end = false;
+    static double lastTimeEnd = glfwGetTime();
+
+    _player.update(_camera, _maze);
+    if (!end) {
+        if (_maze.update(_player.getPosition())) {
+            _particles.toggleActivation();
+            end = true;
+            lastTimeEnd = glfwGetTime();
+        }
+    } else if (aTime - lastTimeEnd > 10.05f) {
+        _particles.toggleActivation();
+        end = false;
+        reset();
+    }
 
     for (auto &shader : _shaders) {
         shader->bind();
@@ -87,9 +102,15 @@ void scene::Scene::onDraw() {
     }
 
     _maze.draw(_models, _shaders);
-    _player.draw(_models, _shaders, _camera, _maze);
+    _player.draw(_models, _shaders);
     for (auto &object : _objects)
         object->draw(_models, _shaders);
+}
+
+void scene::Scene::reset() {
+    _maze.reset();
+    _particles.reset(_maze);
+    _player.reset(_maze);
 }
 
 void scene::Scene::checkKey() {

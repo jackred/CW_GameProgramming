@@ -4,9 +4,8 @@
 
 #include "Player.hpp"
 
-scene::Player::Player(const MazeDisplay &maze) : _speed(0.0f) {
-    auto &start = maze.getStart();
-    _ball.setPosition(glm::vec3(start.x, 0.5f, start.y));
+scene::Player::Player(const MazeDisplay &maze) {
+    reset(maze);
 }
 
 std::ostream &operator<<(std::ostream &stream, const glm::vec3 &vec) {
@@ -14,32 +13,63 @@ std::ostream &operator<<(std::ostream &stream, const glm::vec3 &vec) {
     return stream;
 }
 
-void scene::Player::draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders,
-                         Camera_ptr_t &camera, const MazeDisplay &maze) {
+void scene::Player::draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders) {
+    _ball.draw(models, shaders);
+}
+
+void scene::Player::reset(const MazeDisplay &maze) {
+    auto &start = maze.getStart();
+    _speed = glm::vec3(0.0f);
+    _ball.setPosition(glm::vec3(start.x, 1.5f, start.y));
+}
+
+void scene::Player::update(scene::Camera_ptr_t &camera, const scene::MazeDisplay &maze) {
     double currentTime = glfwGetTime();
     double delta = currentTime - _lastTime;
     _lastTime = currentTime;
 
-    //_speed += glm::vec3(0.0f, -9.81f, 0.0f) * (float) delta * 0.5f;
+    // Apply gravity
+    _speed += glm::vec3(0.0f, -9.81f, 0.0f) * (float) delta * 0.5f;
     auto pos = _ball.getPosition();
-    normal_collision_t collision;
     glm::vec3 newPos = pos + _speed * (float) delta;
+    normal_collision_t collisions[2];
 
     try {
-        collision = maze.intersectSphere(newPos, 0.2f);
+        collisions[0] = maze.intersectSphereWalls(newPos, 0.2f);
     } catch (const std::runtime_error &e) {
         std::cerr << e.what() << std::endl;
-        collision = std::make_tuple(false, glm::vec3(0.0f), glm::vec3(0.0f));
-        _speed = glm::vec3(0.0f);
-        auto &start = maze.getStart();
-        _ball.setPosition(glm::vec3(start.x, 0.5f, start.y));
+        reset(maze);
         return;
     }
+    collisions[1] = maze.intersectSphereFloor(newPos, 0.2f);
 
-    if (std::get<0>(collision)) {
-        const glm::vec3 &normal = std::get<1>(collision);
+    bool isCollide = false;
+    for (auto &collision : collisions) {
+        if (std::get<0>(collision)) {
+            pos += doCollision(collision, pos, newPos) * (float) delta;
+            isCollide = true;
+        }
+    }
+    if (!isCollide)
+        pos = newPos;
+    _ball.setPosition(pos);
+
+    if (_lock) {
+        const glm::vec3 dir(0.0f, -12.0f, -6.0f);
+        camera->setCameraPosition(pos - dir);
+        camera->setCameraFront(dir);
+    }
+}
+
+glm::vec3 scene::Player::doCollision(normal_collision_t &collision, glm::vec3 &pos, glm::vec3 &newPos) {
+    const glm::vec3 &normal = std::get<1>(collision);
+    const glm::vec3 speedThreshold = normal * _speed;
+
+    if (glm::length(glm::abs(speedThreshold)) < 0.5f) {
+        _speed -= speedThreshold;
+        return _speed;
+    } else {
         const glm::vec3 offset = normal * 0.2f;
-
         const glm::vec3 adj_distance = -std::get<2>(collision) - glm::abs(normal) * (pos - newPos) + offset;
         // Hypotenuse = adj / cos(a)
         // Note: cos(acos(a)) == a
@@ -49,17 +79,9 @@ void scene::Player::draw(const scene::Models_t &models, const gl_wrapper::Shader
         const glm::vec3 oldSpeed = _speed;
         _speed = _speed - 2 * glm::dot(_speed, normal) * normal;
         _speed *= 0.85f; // collision speed cost
-        pos += _speed * (float) delta * (1 - ratio) + oldSpeed * (float) delta * ratio;
-    } else
-        pos = newPos;
-    _ball.setPosition(pos);
 
-    if (_lock) {
-        const glm::vec3 dir(0.0f, -12.0f, -6.0f);
-        camera->setCameraPosition(pos - dir);
-        camera->setCameraFront(dir);
+        return _speed * (1 - ratio) + oldSpeed * ratio;
     }
-    _ball.draw(models, shaders);
 }
 
 void scene::Player::goUp() {
@@ -88,6 +110,11 @@ void scene::Player::goLeft() {
 
 }
 
+void scene::Player::doJump() {
+    if (_speed.y < 0.1f)
+        _speed += glm::vec3(0.0f, 2.5f, 0.0f);
+}
+
 void scene::Player::unLockCamera() {
     static double oldTime = 0;
 
@@ -95,4 +122,8 @@ void scene::Player::unLockCamera() {
         oldTime = glfwGetTime();
         _lock = !_lock;
     }
+}
+
+const glm::vec3 scene::Player::getPosition() const {
+    return _ball.getPosition();
 }
