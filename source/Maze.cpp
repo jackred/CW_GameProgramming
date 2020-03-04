@@ -29,7 +29,6 @@ void backstage::Maze::init(size_t minDist) {
 }
 
 
-
 backstage::maze_t backstage::Maze::generateEmptyMaze() {
   maze_t newMaze;
   for (size_t i=0 ; i<_width ; i++) {
@@ -80,7 +79,7 @@ void backstage::Maze::ruleB3_1234Iteration() {
 }
 
 void backstage::Maze::generateCorridor() {
-  for (int i = 0 ; i < std::max(_length, _width) ; i++) {
+  for (int i = 0 ; i < 20 ; i++) {
     // std::cout << *this << std::endl;
     ruleB3_1234Iteration();
   }
@@ -305,14 +304,14 @@ void backstage::Maze::expand(glm::vec2 toExpand, size_t x, size_t y, std::list<g
     glm::vec2 tmp = glm::vec2(x, y);
     size_t distance = manhattanDistance(_end, tmp);
     size_t distToStart = std::get<2>(mapPoint[_length * toExpand[0] + toExpand[1]])+1;
-    if (mapPoint.find(_length*x + y) == mapPoint.end()){
+    std::map<size_t, std::tuple<glm::vec2, size_t, size_t>>::iterator it = mapPoint.find(_length*x + y);
+    if (it == mapPoint.end()){
       mapPoint.insert(std::pair<size_t, std::tuple<glm::vec2, size_t, size_t>>(_length*x+y, std::tuple<glm::vec2, size_t, size_t>(toExpand, distance, distToStart)));
       insertInPosition(tmp, distToStart + distance, toVisit, mapPoint);
-    } else if ((std::get<1>(mapPoint[_length*x + y]) + std::get<2>(mapPoint[_length*x + y])) >= (distance+distToStart)) {
-      mapPoint.insert(std::pair<size_t, std::tuple<glm::vec2, size_t, size_t>>(_length*x+y, std::tuple<glm::vec2, size_t, size_t>(toExpand, distance, distToStart)));
+    }  else if ((std::get<1>(mapPoint[_length*x + y]) + std::get<2>(mapPoint[_length*x + y])) > (distance+distToStart)) {
+      it->second = std::tuple<glm::vec2, size_t, size_t>(toExpand, distance, distToStart);
     }
   }
- 
 }
 
 void backstage::Maze::expandAll(glm::vec2 toExpand, std::list<glm::vec2> &toVisit, std::map<size_t, std::tuple<glm::vec2, size_t, size_t>> &mapPoint, std::set<glm::vec2> visited) {
