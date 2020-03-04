@@ -32,26 +32,20 @@ void scene::Crowd::reset(const scene::MazeDisplay &maze) {
 }
 
 glm::vec3 scene::Crowd::boids(const glm::vec3 &player, const std::vector<Crowd *> &crowds) {
-  glm::vec3 gravityVelocity;
-  glm::vec3 repelVelocity;
+  glm::vec3 gravityVelocity(0.0f);
+  glm::vec3 repelVelocity(0.0f);
   glm::vec3 followVelocity = player - _ball.getPosition();
   for (int j = 0; j < crowds.size() ; j++) {
     if (crowds[j]->getId() != _id) {
-      gravityVelocity += crowds[j]->getPosition();
-      if (glm::distance(_ball.getPosition(), crowds[j]->getPosition()) < _maxSpace) {
-	repelVelocity += _ball.getPosition() - crowds[j]->getPosition();
-      }
+        gravityVelocity += crowds[j]->getPosition();
+        if (glm::distance(_ball.getPosition(), crowds[j]->getPosition()) < _maxSpace) {
+	        repelVelocity += _ball.getPosition() - crowds[j]->getPosition();
+        }
     }
+  }
     gravityVelocity /= (crowds.size()-1);
-  }
-  glm::vec3 res;
-  for (int i = 0 ; i < 3 ; i++) {
-    if (i != 1) {
-      res[i] = (0.01 * gravityVelocity[i]) + (0.5 * repelVelocity[i]) + (0.2 * followVelocity[i]);
-    } else {
-      res[i] = 0.0f;
-    }
-  }
+  glm::vec3 res = 0.01f * gravityVelocity + 0.5f * repelVelocity + 0.2f * followVelocity;
+//res.y = 0.0f;
   res = scaleMax(res);
   return res;
 }

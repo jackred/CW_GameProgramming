@@ -49,7 +49,7 @@ namespace scene {
     Ball _ball;
     glm::vec3 _speed;
     const float _maxSpeed = 1.5f;
-    const float _maxSpace = 0.55f;
+    const float _maxSpace = 0.7f;
     bool _collidePlayer = false;
     std::vector<bool> _collideCrowd;
 

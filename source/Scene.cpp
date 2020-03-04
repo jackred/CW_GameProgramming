@@ -51,7 +51,7 @@ void scene::Scene::init() {
 
     _maze.init();
 
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < 15; i++)
         _crowd.emplace_back(new Crowd());
 
     _dirLight.setAmbient(glm::vec3(0.5f, 0.5f, 0.5f));
