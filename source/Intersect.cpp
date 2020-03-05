@@ -4,6 +4,7 @@
 
 #include "Intersect.hpp"
 
+// Check for collision between two squares
 bool scene::Intersect::squares(const glm::vec3 &aMin, const glm::vec3 &aMax,
         const glm::vec3 &bMin, const glm::vec3 &bMax) {
     return (aMin.x <= bMax.x && aMax.x >= bMin.x) &&
@@ -11,6 +12,7 @@ bool scene::Intersect::squares(const glm::vec3 &aMin, const glm::vec3 &aMax,
            (aMin.z <= bMax.z && aMax.z >= bMin.z);
 }
 
+// Check for collision between two spheres
 bool scene::Intersect::spheres(const glm::vec3 &aSphere, const float &aRadius,
         const glm::vec3 &bSphere, const float &bRadius) {
     float distance = std::sqrt(
@@ -21,6 +23,7 @@ bool scene::Intersect::spheres(const glm::vec3 &aSphere, const float &aRadius,
     return distance < (aRadius + bRadius);
 }
 
+// Check for collision between a square and sphere
 bool scene::Intersect::sphereSquare(const glm::vec3 &aMin, const glm::vec3 &aMax,
         const glm::vec3 &sphere, const float &radius) {
     float x = std::max(aMin.x, std::min(sphere.x, aMax.x));
@@ -35,6 +38,7 @@ bool scene::Intersect::sphereSquare(const glm::vec3 &aMin, const glm::vec3 &aMax
     return distance < radius;
 }
 
+// Get normal vector when a collision occure between a shpere and square
 scene::normal_collision_t scene::Intersect::vectorNormal(const glm::vec3 &aCenter, const glm::vec3 &aSize,
         const glm::vec3 &bCenter) {
     const glm::vec2 c(bCenter.x, bCenter.z);

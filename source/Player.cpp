@@ -8,16 +8,19 @@ scene::Player::Player() : _ball(ModelType::BALL), _speed(0.0f) {
     _ball.setSize(glm::vec3(_size));
 }
 
+// Drawing method for a player
 void scene::Player::draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders) {
     _ball.draw(models, shaders);
 }
 
+// Reset crowd position based on the starting point on the maze
 void scene::Player::reset(const MazeDisplay &maze) {
     auto &start = maze.getStart();
     _speed = glm::vec3(0.0f);
     _ball.setPosition(glm::vec3(start.x, 1.0f, start.y));
 }
 
+// Update the player position and check all the collisions
 void scene::Player::update(scene::Camera_ptr_t &camera, const scene::MazeDisplay &maze, std::vector<Crowd *> &crowd) {
     double currentTime = glfwGetTime();
     double delta = currentTime - _lastTime;
@@ -42,6 +45,7 @@ void scene::Player::update(scene::Camera_ptr_t &camera, const scene::MazeDisplay
         _ball.setPosition(glm::vec3(pos.x, 0.21f, pos.z));
 }
 
+// Prevent the player to collide with other crowd
 void scene::Player::collideWithCrowd(std::vector<Crowd *> &crowd, double &delta) {
     for (auto &ball : crowd) {
         glm::vec3 newPos = _ball.getPosition() + _speed * (float) delta;
@@ -50,6 +54,7 @@ void scene::Player::collideWithCrowd(std::vector<Crowd *> &crowd, double &delta)
     }
 }
 
+// Prevent the crowd to collide with walls
 void scene::Player::collideWithWalls(const MazeDisplay &maze, double &delta) {
     normal_collision_t collision;
     auto pos = _ball.getPosition();
@@ -69,7 +74,7 @@ void scene::Player::collideWithWalls(const MazeDisplay &maze, double &delta) {
     _ball.setPosition(pos);
 }
 
-
+// Prevent the crowd to collide with floor
 void scene::Player::collideWithFloor(const MazeDisplay &maze, double &delta) {
     auto pos = _ball.getPosition();
     glm::vec3 newPos = pos + _speed * (float) delta;
@@ -82,6 +87,7 @@ void scene::Player::collideWithFloor(const MazeDisplay &maze, double &delta) {
     _ball.setPosition(pos);
 }
 
+// Collision private method where we are calculating the new speed and new position when a collision from happening
 glm::vec3 scene::Player::doCollision(normal_collision_t &collision, glm::vec3 &pos, glm::vec3 &newPos) {
     const glm::vec3 &normal = std::get<1>(collision);
     const glm::vec3 speedThreshold = normal * _speed;
@@ -105,6 +111,7 @@ glm::vec3 scene::Player::doCollision(normal_collision_t &collision, glm::vec3 &p
     }
 }
 
+// Scale on the max speed
 glm::vec3 &scene::Player::scaleMax(glm::vec3 &velocity) {
     auto max = std::max(velocity.x, std::max(velocity.y, velocity.z));
     if (max > _maxSpeed) {

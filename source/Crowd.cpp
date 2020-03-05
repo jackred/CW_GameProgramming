@@ -10,6 +10,7 @@ scene::Crowd::Crowd() : _speed(0.0f), _id(_idGen++), _ball(ModelType::CROWD) {
     _ball.setSize(glm::vec3(_size));
 }
 
+// Drawing method for a crowd
 void scene::Crowd::draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders) {
     _collidePlayer = false;
     for (auto collide : _collideCrowd)
@@ -17,6 +18,7 @@ void scene::Crowd::draw(const scene::Models_t &models, const gl_wrapper::Shaders
     _ball.draw(models, shaders);
 }
 
+// Reset crowd position based on the number of crowd in total and the position of the payer
 void scene::Crowd::reset(const scene::MazeDisplay &maze) {
     auto &start = maze.getStart();
     glm::vec2 offset(std::sin(_id * (360.0f / _idGen) * M_PI / 180.0f),
@@ -26,6 +28,8 @@ void scene::Crowd::reset(const scene::MazeDisplay &maze) {
     _collideCrowd.resize(_idGen);
 }
 
+// Calculate speed vector for the boids model
+// Base on three vector gravity, repel and follow
 glm::vec3 scene::Crowd::boids(const glm::vec3 &player, const std::vector<Crowd *> &crowds) {
     glm::vec3 gravityVelocity(0.0f);
     glm::vec3 repelVelocity(0.0f);
@@ -44,6 +48,7 @@ glm::vec3 scene::Crowd::boids(const glm::vec3 &player, const std::vector<Crowd *
     return res;
 }
 
+// Update the crowd position and check all the collisions
 void scene::Crowd::update(const scene::MazeDisplay &maze, const glm::vec3 &player, const std::vector<Crowd *> &crowds) {
     double currentTime = glfwGetTime();
     double delta = currentTime - _lastTime;
@@ -66,6 +71,7 @@ void scene::Crowd::update(const scene::MazeDisplay &maze, const glm::vec3 &playe
 
 }
 
+// Prevent the crowd to collide with the player
 void scene::Crowd::collideWithPlayer(const glm::vec3 &player, double &delta) {
     if (_collidePlayer)
         return;
@@ -75,6 +81,7 @@ void scene::Crowd::collideWithPlayer(const glm::vec3 &player, double &delta) {
     _collidePlayer = true;
 }
 
+// Prevent the crowd to collide with other crowd
 void scene::Crowd::collideWithCrowd(const std::vector<Crowd *> &crowds, double &delta) {
     for (auto &ball : crowds) {
         auto &id = ball->getId();
@@ -90,6 +97,7 @@ void scene::Crowd::collideWithCrowd(const std::vector<Crowd *> &crowds, double &
 
 }
 
+// Prevent the crowd to collide with walls
 void scene::Crowd::collideWithWalls(const scene::MazeDisplay &maze, double &delta) {
     normal_collision_t collision;
     auto pos = _ball.getPosition();
@@ -109,6 +117,7 @@ void scene::Crowd::collideWithWalls(const scene::MazeDisplay &maze, double &delt
 
 }
 
+// Prevent the crowd to collide with floor
 void scene::Crowd::collideWithFloor(const scene::MazeDisplay &maze, double &delta) {
     auto pos = _ball.getPosition();
     glm::vec3 newPos = pos + _speed * (float) delta;
@@ -121,6 +130,7 @@ void scene::Crowd::collideWithFloor(const scene::MazeDisplay &maze, double &delt
     _ball.setPosition(pos);
 }
 
+// Collision private method where we are calculating the new speed and new position when a collision from happening
 glm::vec3 scene::Crowd::doCollision(scene::normal_collision_t &collision, glm::vec3 &pos, glm::vec3 &newPos) {
     const glm::vec3 &normal = std::get<1>(collision);
     const glm::vec3 speedThreshold = normal * _speed;
@@ -144,6 +154,7 @@ glm::vec3 scene::Crowd::doCollision(scene::normal_collision_t &collision, glm::v
     }
 }
 
+// Scale on the max speed
 glm::vec3 &scene::Crowd::scaleMax(glm::vec3 &velocity) {
     auto max = std::max(velocity.x, std::max(velocity.y, velocity.z));
     if (max > _maxSpeed) {

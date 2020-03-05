@@ -6,6 +6,7 @@
 
 scene::MazeDisplay::MazeDisplay() : _floor(WIDTH * HEIGHT), _maze(WIDTH, HEIGHT) {}
 
+// Init maze and instanciate floor and walls
 void scene::MazeDisplay::init() {
     _maze.init();
     backstage::walls_t _test = _maze.getWalls();
@@ -24,6 +25,7 @@ void scene::MazeDisplay::init() {
     initFloor(size);
 }
 
+// Draw floor and walls
 void scene::MazeDisplay::draw(const scene::Models_t &models, const gl_wrapper::Shaders_t &shaders) {
     for (const auto &it : _walls)
         it->draw(models, shaders);
@@ -32,11 +34,13 @@ void scene::MazeDisplay::draw(const scene::Models_t &models, const gl_wrapper::S
             _floor.draw(shader);
 }
 
+// Reset Maze path
 void scene::MazeDisplay::reset() {
     _maze.resetPathFromEnd();
     changeFloorColor();
 }
 
+// Update a* based on the player position
 bool scene::MazeDisplay::update(const glm::vec3 playerPosition) {
     const glm::vec2 size(_maze.getWidth(), _maze.getLength());
     glm::vec2 start = _maze.getStart();
@@ -51,12 +55,14 @@ bool scene::MazeDisplay::update(const glm::vec3 playerPosition) {
     return ((int) end.x == (int) pos.x && (int) end.y == (int) pos.y);
 }
 
+// clear maze walls
 void scene::MazeDisplay::clear() {
     for (const auto &it : _walls)
         delete it;
     _walls.clear();
 }
 
+// Init maze floor with instanciation
 void scene::MazeDisplay::initFloor(const glm::vec2 &size) {
     const size_t chunk_nb = size.x * size.y;
 
@@ -78,6 +84,7 @@ void scene::MazeDisplay::initFloor(const glm::vec2 &size) {
     _floor.updateModel(chunk_nb);
 }
 
+// Change the floor color based on a* path
 void scene::MazeDisplay::changeFloorColor() {
     const glm::vec2 size(_maze.getWidth(), _maze.getLength());
     const size_t chunk_nb = size.x * size.y;
@@ -96,6 +103,7 @@ void scene::MazeDisplay::changeFloorColor() {
     _floor.updateModel(chunk_nb);
 }
 
+// Check if other square are crossing the maze wall and floor
 bool scene::MazeDisplay::intersectSquare(glm::vec3 center, float size) const {
     const glm::vec3 min(center - glm::vec3(size / 2.0f));
     const glm::vec3 max(center + glm::vec3(size / 2.0f));
@@ -108,6 +116,7 @@ bool scene::MazeDisplay::intersectSquare(glm::vec3 center, float size) const {
     return false;
 }
 
+// Check if sphere are intersecting floor
 scene::normal_collision_t scene::MazeDisplay::intersectSphereWalls(glm::vec3 center, float radius) const {
     for (auto &wall : _walls)
         if (Intersect::sphereSquare(wall->getMin(), wall->getMax(), center, radius))
@@ -115,6 +124,7 @@ scene::normal_collision_t scene::MazeDisplay::intersectSphereWalls(glm::vec3 cen
     return std::make_tuple(false, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f));
 }
 
+// Check if sphere are intersecting walls
 scene::normal_collision_t scene::MazeDisplay::intersectSphereFloor(glm::vec3 center, float radius) const {
     const glm::vec2 size(_maze.getWidth(), _maze.getLength());
     const glm::vec3 floorMin((-size.x / 2) * 2.0f + 1.0f, -0.2f, (-size.y / 2) * 2.0f + 1.0f);
@@ -125,12 +135,14 @@ scene::normal_collision_t scene::MazeDisplay::intersectSphereFloor(glm::vec3 cen
     return std::make_tuple(false, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f));
 }
 
+// Convert maze start position into spacial position
 const glm::vec2 scene::MazeDisplay::getStart() const {
     auto start = _maze.getStart();
     const glm::vec2 size(_maze.getWidth(), _maze.getLength());
     return glm::vec2((start.x - size.x / 2.0f) * 2.0f + 1.0f, (start.y - size.y / 2.0f) * 2.0f + 1.0f);
 }
 
+// Convert maze end position into spacial position
 const glm::vec2 scene::MazeDisplay::getEnd() const {
     auto end = _maze.getEnd();
     const glm::vec2 size(_maze.getWidth(), _maze.getLength());

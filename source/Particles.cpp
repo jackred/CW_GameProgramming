@@ -6,6 +6,7 @@
 
 scene::Particles::Particles() : _instances(MAX_PARTICLES) {}
 
+// Draw and update particles
 void scene::Particles::draw(const gl_wrapper::Shader_ptr_t &shader, const MazeDisplay &maze) {
     double currentTime = glfwGetTime();
     double delta = currentTime - _lastTime;
@@ -19,12 +20,14 @@ void scene::Particles::draw(const gl_wrapper::Shader_ptr_t &shader, const MazeDi
     }
 }
 
+// Reset particles
 void scene::Particles::reset(const MazeDisplay &maze) {
     for (auto &particle : _particlesContainer)
         particle.life = -1.0f;
     _position = glm::vec3(maze.getEnd().x, 0.01f, maze.getEnd().y);
 }
 
+// Create new particles if possible
 void scene::Particles::refreshParticles(double &delta) {
     int nb_particles = (int) (delta * 800);
     if (nb_particles > (int) (0.016f * 800))
@@ -61,6 +64,7 @@ void scene::Particles::refreshParticles(double &delta) {
     }
 }
 
+// Update existing particles
 void scene::Particles::updateModel(const MazeDisplay &maze, double &delta) {
     unsigned int actual_amount = 0;
     for (auto &p : _particlesContainer) {
@@ -84,6 +88,7 @@ void scene::Particles::updateModel(const MazeDisplay &maze, double &delta) {
     _instances.updateModel(actual_amount);
 }
 
+// Find unused particles
 int scene::Particles::findUnusedParticle() {
     for (int i = _lastUsedParticle; i < MAX_PARTICLES; i++){
         if (_particlesContainer[i].life < 0){
