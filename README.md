@@ -11,7 +11,7 @@ In order to have a full marks we had to do enhancement on components and interac
 
 ### Demo
 
-[](amazing.gif)
+![](amazing.gif)
 
 ### Dependences 
 
