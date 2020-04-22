@@ -1,4 +1,4 @@
-# CW_GameProgramming
+# aMAZing
 
 School project for Computer Graphics Programming class.
 
